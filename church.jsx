@@ -4,6 +4,7 @@ import AboutPage from "./AboutPage.jsx";
 import GalleryPage from "./GalleryPage.jsx";
 import SermonsPage from "./SermonsPage.jsx";
 import EventsPage from "./EventsPage.jsx";
+import AdminApp from "./AdminApp.jsx";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -582,7 +583,7 @@ function Nav() {
               width: i === 1 ? (menuOpen ? 0 : 20) : 26,
               height: 2,
               borderRadius: 2,
-              background: (scrolled || !isHome) ? "var(--charcoal)" : "var(--white)",
+              background: scrolled ? "var(--charcoal)" : "var(--white)",
               transition: "all 0.3s cubic-bezier(.22,1,.36,1)",
               transformOrigin: "center",
               transform: menuOpen
@@ -1237,6 +1238,7 @@ function AppContent() {
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/sermons" element={<SermonsPage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
       <Footer onNav={handleNav} />
     </div>
