@@ -455,6 +455,7 @@ export const GLOBAL_CSS = `
   @media (max-width:768px) {
     .desktop-nav { display:none !important; }
     .mobile-toggle { display:flex !important; }
+    .main-nav { padding-left:20px !important; padding-right:20px !important; }
     .stats-grid { grid-template-columns:1fr 1fr !important; gap:36px !important; }
     .about-grid { grid-template-columns:1fr !important; }
     .gallery-grid-3 { grid-template-columns:1fr 1fr !important; }
@@ -520,65 +521,150 @@ function Nav() {
   const isHome = location.pathname === "/";
 
   return (
-    <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 80,
-      padding: scrolled ? "10px 48px" : "22px 48px",
-      background: scrolled ? "rgba(244,248,253,0.92)" : "transparent",
-      backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
-      borderBottom: scrolled ? "1px solid rgba(0,70,140,0.1)" : "none",
-      transition: "all 0.45s cubic-bezier(.22,1,.36,1)",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-    }}>
-      {/* Logo */}
-      <button onClick={() => handleNav("Home")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}>
-        <img
-          src="/images/header/logo.png"
-          alt="Life Brand Church"
-          style={{ height: 44, objectFit: "contain", filter: (scrolled || !isHome) ? "none" : "brightness(0) invert(1)" }}
-          onError={(e) => {
-            e.target.style.display = "none";
-            e.target.nextSibling.style.display = "block";
-          }}
-        />
-        <span style={{ display: "none", fontFamily: "'Source Serif 4', serif", fontSize: "1.2rem", fontWeight: 600, color: scrolled ? "var(--charcoal)" : "var(--white)" }}>
-          Life Brand<span style={{ fontWeight: 300, color: "var(--gold-light)" }}> Church</span>
-        </span>
-      </button>
-
-      {/* Desktop nav */}
-      <div className="desktop-nav" style={{ display: "flex", gap: "28px", alignItems: "center" }}>
-        {NAV_ITEMS.map((item) => (
-          <button
-            key={item}
-            className={`nav-link${isActive(item) ? " active" : ""}`}
-            style={{ color: (scrolled || !isHome) ? undefined : "rgba(255,255,255,0.65)" }}
-            onClick={() => handleNav(item)}
-          >
-            {item}
-          </button>
-        ))}
-        <button className="btn-red" onClick={() => handleNav("Contact")} style={{ padding: "10px 22px", fontSize: "0.72rem" }}>
-          Visit Us
-        </button>
-      </div>
-
-      {/* Hamburger */}
-      <button
-        className="mobile-toggle"
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Toggle menu"
-        style={{ background: "none", border: "none", cursor: "pointer", width: 36, height: 36, display: "flex", flexDirection: "column", justifyContent: "center", gap: 7, zIndex: 96 }}
+    <>
+      <nav
+        className="main-nav"
+        style={{
+          position: "fixed", top: 0, left: 0, right: 0, zIndex: 80,
+          padding: scrolled ? "10px 48px" : "22px 48px",
+          background: scrolled ? "rgba(244,248,253,0.92)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(0,70,140,0.1)" : "none",
+          transition: "all 0.45s cubic-bezier(.22,1,.36,1)",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}
       >
-        {[0, 1].map((i) => (
-          <span key={i} style={{
-            width: 26, height: 1.5,
-            background: (scrolled || !isHome) ? "var(--charcoal)" : "var(--white)",
-            transition: "all 0.35s cubic-bezier(.22,1,.36,1)",
-            transform: menuOpen ? (i === 0 ? "rotate(45deg) translateY(4.25px)" : "rotate(-45deg) translateY(-4.25px)") : "none",
-          }} />
-        ))}
-      </button>
-    </nav>
+        {/* Logo */}
+        <button onClick={() => handleNav("Home")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}>
+          <img
+            src="/images/header/logo.png"
+            alt="Life Brand Church"
+            style={{ height: 40, objectFit: "contain", filter: (scrolled || !isHome) ? "none" : "brightness(0) invert(1)" }}
+            onError={(e) => { e.target.style.display = "none"; e.target.nextSibling.style.display = "block"; }}
+          />
+          <span style={{ display: "none", fontFamily: "'Source Serif 4', serif", fontSize: "1.1rem", fontWeight: 600, color: scrolled ? "var(--charcoal)" : "var(--white)" }}>
+            Life Brand<span style={{ fontWeight: 300, color: "var(--gold-light)" }}> Church</span>
+          </span>
+        </button>
+
+        {/* Desktop nav */}
+        <div className="desktop-nav" style={{ display: "flex", gap: "28px", alignItems: "center" }}>
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item}
+              className={`nav-link${isActive(item) ? " active" : ""}`}
+              style={{ color: (scrolled || !isHome) ? undefined : "rgba(255,255,255,0.65)" }}
+              onClick={() => handleNav(item)}
+            >
+              {item}
+            </button>
+          ))}
+          <button className="btn-red" onClick={() => handleNav("Contact")} style={{ padding: "10px 22px", fontSize: "0.72rem" }}>
+            Visit Us
+          </button>
+        </div>
+
+        {/* Hamburger */}
+        <button
+          className="mobile-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            width: 44, height: 44, display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", gap: 6, zIndex: 96,
+            flexShrink: 0,
+          }}
+        >
+          {[0, 1, 2].map((i) => (
+            <span key={i} style={{
+              display: "block",
+              width: i === 1 ? (menuOpen ? 0 : 20) : 26,
+              height: 2,
+              borderRadius: 2,
+              background: (scrolled || !isHome) ? "var(--charcoal)" : "var(--white)",
+              transition: "all 0.3s cubic-bezier(.22,1,.36,1)",
+              transformOrigin: "center",
+              transform: menuOpen
+                ? i === 0 ? "translateY(8px) rotate(45deg)"
+                : i === 2 ? "translateY(-8px) rotate(-45deg)"
+                : "scaleX(0)"
+                : "none",
+              opacity: menuOpen && i === 1 ? 0 : 1,
+            }} />
+          ))}
+        </button>
+      </nav>
+
+      {/* ── Mobile menu ── */}
+      {menuOpen && (
+        <>
+          <div
+            className="mobile-menu-overlay"
+            onClick={() => setMenuOpen(false)}
+          />
+          <div className="mobile-menu-panel">
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 40 }}>
+              <img
+                src="/images/header/logo.png"
+                alt="Life Brand Church"
+                style={{ height: 36, objectFit: "contain", filter: "brightness(0) invert(1)" }}
+                onError={(e) => { e.target.style.display = "none"; }}
+              />
+              <button
+                onClick={() => setMenuOpen(false)}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.5)", fontSize: "1.5rem", lineHeight: 1, padding: 4 }}
+                aria-label="Close menu"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Nav links */}
+            <nav style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+              {NAV_ITEMS.map((item, i) => (
+                <button
+                  key={item}
+                  onClick={() => handleNav(item)}
+                  style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    textAlign: "left", padding: "16px 0",
+                    fontFamily: "'Source Serif 4', serif",
+                    fontSize: "1.45rem", fontWeight: 300,
+                    color: isActive(item) ? "var(--red-light)" : "rgba(250,248,244,0.8)",
+                    borderBottom: "1px solid rgba(255,255,255,0.07)",
+                    transition: "color 0.25s",
+                    display: "flex", alignItems: "center", gap: 12,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--white)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = isActive(item) ? "var(--red-light)" : "rgba(250,248,244,0.8)"; }}
+                >
+                  {isActive(item) && (
+                    <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--red)", flexShrink: 0 }} />
+                  )}
+                  {item}
+                </button>
+              ))}
+            </nav>
+
+            {/* CTA */}
+            <button
+              className="btn-red"
+              onClick={() => handleNav("Contact")}
+              style={{ width: "100%", marginTop: 32, padding: "15px" }}
+            >
+              Visit Us
+            </button>
+
+            {/* Tagline */}
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.6rem", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", textAlign: "center", marginTop: 20 }}>
+              Giving Light
+            </p>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 
@@ -1092,6 +1178,16 @@ function HomePage() {
   );
 }
 
+// ─── ScrollToTop ─────────────────────────────────────────────────────────────
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+  return null;
+}
+
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 function AppContent() {
@@ -1133,6 +1229,7 @@ function AppContent() {
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", color: "var(--text)", background: "var(--cream)" }}>
+      <ScrollToTop />
       <Nav />
       <Routes>
         <Route path="/" element={<HomePage />} />
