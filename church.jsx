@@ -539,7 +539,7 @@ function Nav() {
           <img
             src="/images/header/logo.png"
             alt="Life Brand Church"
-            style={{ height: 40, objectFit: "contain", filter: (scrolled || !isHome) ? "none" : "brightness(0) invert(1)" }}
+            style={{ height: 40, objectFit: "contain" }}
             onError={(e) => { e.target.style.display = "none"; e.target.nextSibling.style.display = "block"; }}
           />
           <span style={{ display: "none", fontFamily: "'Source Serif 4', serif", fontSize: "1.1rem", fontWeight: 600, color: scrolled ? "var(--charcoal)" : "var(--white)" }}>
@@ -609,7 +609,7 @@ function Nav() {
               <img
                 src="/images/header/logo.png"
                 alt="Life Brand Church"
-                style={{ height: 36, objectFit: "contain", filter: "brightness(0) invert(1)" }}
+                style={{ height: 36, objectFit: "contain" }}
                 onError={(e) => { e.target.style.display = "none"; }}
               />
               <button
@@ -712,7 +712,7 @@ function Footer({ onNav }) {
         <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr 1fr", gap: 48, marginBottom: 56 }}>
           {/* Brand col */}
           <div>
-            <img src="/images/header/logo.png" alt="Life Brand Church" style={{ height: 50, objectFit: "contain", marginBottom: 20, filter: "brightness(0) invert(1)" }}
+            <img src="/images/header/logo.png" alt="Life Brand Church" style={{ height: 50, objectFit: "contain", marginBottom: 20 }}
               onError={(e) => {
                 e.target.style.display = "none";
                 e.target.nextSibling.style.display = "block";
