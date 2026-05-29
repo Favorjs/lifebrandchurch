@@ -13,9 +13,10 @@ import AppRouter from "./AppRouter.jsx";
 
 
 const SERVICES = [
-  { day: "Sunday", time: "8:00 AM",   name: "First Service",       desc: "Traditional morning worship — hymns, prayer and the preaching of God's Word." },
-  { day: "Sunday", time: "10:30 AM",  name: "Second Service",      desc: "Contemporary praise and worship with live music, powerful ministry and fellowship." },
-  { day: "Wednesday", time: "6:30 PM",name: "Midweek Bible Study", desc: "Deep scripture study, intercession and community prayer for every believer." },
+  { day: "Sunday", time: "8:00 AM - 9:00 AM",   name: "Worker's Prayer",       desc: "Traditional morning worship — hymns, prayer and the preaching of God's Word. for God's workers" },
+  { day: "Sunday", time: "9:00 AM - 11:00 AM",  name: "Church Service",      desc: "Contemporary praise and worship with live music, powerful ministry and fellowship." },
+  { day: "Thursday", time: "8:00 AM - 9:00 AM", name: "A Prayer Programme for Busniness Owners and Entrepreneur " },
+   { day: "Every First Friday", time: "11:00 PM" ,name: "Ephphatha Night",      desc: "Heaven shall be opened for HIS POWER in the mighty name of JESUS CHRIST." },
 ];
 
 const EVENTS = [
@@ -783,7 +784,7 @@ function Footer({ onNav }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {[
                 { icon: "📍", val: "No 34, Ijaiye Road, Carterpillar Bus Stop, Ogba, Ikeja, Lagos, Nigeria" },
-                { icon: "📞", val: "+61 3 8376 6284" },
+                { icon: "📞", val: "+234 803 499 8775" },
                 { icon: "✉️", val: "godlove@lifebrandchurch.com" },
               ].map((c) => (
                 <div key={c.icon} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
@@ -1148,7 +1149,7 @@ export function HomePage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   {[
                     { label: "Address", value: "No 34, Ijaiye Road, Carterpillar Bus Stop,\nBtw Stanbic IBTC Bank & LG Office,\nOgba, Ikeja, Lagos, Nigeria" },
-                    { label: "Phone",   value: "+61 3 8376 6284\n+61 3 2555 682 458" },
+                    { label: "Phone",   value: "+234 803 499 8775\n+61 3 2555 682 458" },
                     { label: "Email",   value: "godlove@lifebrandchurch.com" },
                   ].map((c) => (
                     <div key={c.label}>
