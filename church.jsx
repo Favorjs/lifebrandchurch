@@ -974,7 +974,7 @@ export function HomePage() {
                 {/* Red accent badge */}
                 <div style={{ position: "absolute", bottom: 20, left: 20, background: "var(--red)", color: "var(--white)", padding: "10px 18px", borderRadius: 2 }}>
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 2 }}>Lead Pastor</div>
-                  <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "0.98rem", fontWeight: 400 }}>Apolstle Olusayo Oyebola Ajao</div>
+                  <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "0.98rem", fontWeight: 400 }}>Apostle Olusayo Oyebola Ajao</div>
                 </div>
               </div>
             </FadeIn>
@@ -985,7 +985,7 @@ export function HomePage() {
                 <div style={{ width: 40, height: 3, background: "linear-gradient(to right, var(--red), var(--gold-dark))", marginBottom: 24, borderRadius: 2 }} />
                 <p style={{ fontFamily: "'Source Serif 4', serif", fontSize: "clamp(1rem, 1.8vw, 1.18rem)", fontWeight: 300, lineHeight: 1.85, color: "var(--text)", marginBottom: 18 }}>
                   Life Brand Church is a vibrant, Spirit-filled community in the heart of Ogba, Ikeja, Lagos. Under the leadership of{" "}
-                  <em style={{ color: "var(--red)", fontStyle: "normal", fontWeight: 600 }}>Pastor Oyebola Ajao</em>, we are committed to giving light — shining God's love into every corner of our community.
+                  <em style={{ color: "var(--red)", fontStyle: "normal", fontWeight: 600 }}>Apostle Olusayo Oyebola Ajao</em>, we are committed to giving light — shining God's love into every corner of our community.
                 </p>
                 <p style={{ fontSize: "0.9rem", lineHeight: 1.8, color: "var(--text-muted)", marginBottom: 32 }}>
                   We gather not because we have it all figured out, but because we believe love transforms everything — and transformation begins in community with God.
@@ -1143,7 +1143,7 @@ export function HomePage() {
                 {/* Pastor card */}
                 <div style={{ padding: "18px 22px", background: "rgba(229,69,43,0.08)", border: "1px solid rgba(229,69,43,0.2)", borderLeft: "3px solid var(--red)", borderRadius: "0 4px 4px 0", marginBottom: 30 }}>
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.66rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--red-light)", marginBottom: 5 }}>Lead Pastor</div>
-                  <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "1.05rem", color: "var(--white)" }}>Pastor Oyebola Ajao</div>
+                  <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "1.05rem", color: "var(--white)" }}>Apostle Olusayo Oyebola Ajao</div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   {[

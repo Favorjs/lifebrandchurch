@@ -1,7 +1,7 @@
 import { FadeIn, PageHero, DarkSection, useInView } from "./church.jsx";
 
 const TEAM = [
-  { name: "Pastor Oyebola Ajao", role: "Senior Pastor", image: "/images/content/about/team1.jpg", bio: "With a heart burning for God and people, Pastor Oyebola leads Life Brand Church in its mission to give light to every nation." },
+  { name: "Apostle Olusayo Oyebola Ajao", role: "Senior Pastor", image: "/images/content/about/team1.jpg", bio: "With a heart burning for God and people, Pastor Oyebola leads Life Brand Church in its mission to give light to every nation." },
   { name: "Associate Pastor", role: "Associate Pastor", image: "/images/content/about/team2.jpg", bio: "Serving the congregation with dedication, equipping believers for works of service and spiritual growth." },
   { name: "Youth Pastor", role: "Youth & Children", image: "/images/content/about/team3.jpg", bio: "Passionately investing in the next generation, raising up young people who love God and live for Him." },
   { name: "Women's Leader", role: "Women's Ministry", image: "/images/content/about/team4.jpg", bio: "Building a sisterhood of faith, empowering women to discover their purpose and walk in God's grace." },
@@ -46,7 +46,7 @@ export default function AboutPage() {
                   Life Brand Church was founded with a clear mandate from God — to be a light in the community of Ogba, Ikeja and to reach the nations with the love and power of the Holy Spirit.
                 </p>
                 <p style={{ fontSize: "0.9rem", lineHeight: 1.82, color: "var(--text-muted)", marginBottom: 16 }}>
-                  Under the leadership of Pastor Oyebola Ajao, we have grown into a vibrant, Spirit-filled congregation that believes in the full gospel of Jesus Christ. Every Sunday, every Wednesday, and through every outreach — we carry the message: <em style={{ color: "var(--red)", fontStyle: "normal", fontWeight: 600 }}>Giving Light.</em>
+                  Under the leadership of Apostle Olusayo Oyebola Ajao, we have grown into a vibrant, Spirit-filled congregation that believes in the full gospel of Jesus Christ. Every Sunday, every Wednesday, and through every outreach — we carry the message: <em style={{ color: "var(--red)", fontStyle: "normal", fontWeight: 600 }}>Giving Light.</em>
                 </p>
                 <p style={{ fontSize: "0.9rem", lineHeight: 1.82, color: "var(--text-muted)" }}>
                   We are more than a church — we are a family. A place where seekers find answers, the broken find healing, the lost find home, and every believer grows deeper in faith, love and purpose.

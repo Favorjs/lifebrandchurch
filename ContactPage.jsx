@@ -178,12 +178,12 @@ export default function ContactPage() {
                     <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 16 }}>
                       <img
                         src="/images/content/about/team1.jpg"
-                        alt="Pastor Oyebola Ajao"
+                        alt="Apostle Olusayo Oyebola Ajao"
                         style={{ width: 60, height: 60, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--stone)" }}
                         onError={(e) => { e.target.style.display = "none"; }}
                       />
                       <div>
-                        <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "1.05rem", fontWeight: 600, color: "var(--charcoal)" }}>Pastor Oyebola Ajao</div>
+                        <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "1.05rem", fontWeight: 600, color: "var(--charcoal)" }}>Apostle Olusayo Oyebola Ajao</div>
                         <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--red)", marginTop: 2 }}>Senior Pastor</div>
                       </div>
                     </div>

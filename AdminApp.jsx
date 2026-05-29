@@ -594,7 +594,7 @@ function AdminEvents() {
 
 // ─── Sermons Admin ────────────────────────────────────────────────────────────
 const SERMON_CATS = ["Grace", "Faith", "Prayer", "Holy Spirit", "Evangelism", "Healing", "Worship"];
-const EMPTY_SERMON = { title: "", pastor: "Pastor Oyebola Ajao", date: "", duration: "", category: "Grace", youtubeId: "", thumbnail: "" };
+const EMPTY_SERMON = { title: "", pastor: "Apostle Olusayo Oyebola Ajao", date: "", duration: "", category: "Grace", youtubeId: "", thumbnail: "" };
 
 function AdminSermons() {
   const [items,  setItems]  = useState([]);
@@ -709,7 +709,7 @@ function AdminSermons() {
 }
 
 // ─── Blog Admin ───────────────────────────────────────────────────────────────
-const EMPTY_BLOG = { title: "", author: "Pastor Oyebola Ajao", date: "", image: "", excerpt: "", content: "" };
+const EMPTY_BLOG = { title: "", author: "Apostle Olusayo Oyebola Ajao", date: "", image: "", excerpt: "", content: "" };
 
 function AdminBlog() {
   const [items,  setItems]  = useState([]);

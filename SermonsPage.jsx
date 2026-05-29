@@ -2,18 +2,18 @@ import { useState } from "react";
 import { FadeIn, PageHero, DarkSection } from "./church.jsx";
 
 const SERMONS = [
-  { id: 1, title: "The Law Demands, but Grace Supplies",    pastor: "Pastor Oyebola Ajao", date: "May 19, 2026", duration: "52 min", category: "Grace",       thumbnail: "/images/content/serm_img1.jpg", youtubeId: "xImpyYRVGOc" },
-  { id: 2, title: "Sharing Our Faith & Love To Children",   pastor: "Pastor Oyebola Ajao", date: "May 12, 2026", duration: "45 min", category: "Evangelism",  thumbnail: "/images/content/serm_img2.jpg", youtubeId: "xImpyYRVGOc" },
-  { id: 3, title: "Walking in the Spirit",                   pastor: "Pastor Oyebola Ajao", date: "May 5, 2026",  duration: "48 min", category: "Holy Spirit", thumbnail: "/images/content/serm_img3.jpg", youtubeId: "xImpyYRVGOc" },
-  { id: 4, title: "The Power of Prayer",                     pastor: "Pastor Oyebola Ajao", date: "Apr 28, 2026", duration: "40 min", category: "Prayer",      thumbnail: "/images/content/serm_img4.jpg", youtubeId: "xImpyYRVGOc" },
-  { id: 5, title: "Delight Yourself in the Lord",            pastor: "Pastor Oyebola Ajao", date: "Apr 21, 2026", duration: "55 min", category: "Faith",       thumbnail: "/images/content/serm_img5.jpg", youtubeId: "xImpyYRVGOc" },
+  { id: 1, title: "The Law Demands, but Grace Supplies",    pastor: "Apostle Olusayo Oyebola Ajao", date: "May 19, 2026", duration: "52 min", category: "Grace",       thumbnail: "/images/content/serm_img1.jpg", youtubeId: "xImpyYRVGOc" },
+  { id: 2, title: "Sharing Our Faith & Love To Children",   pastor: "Apostle Olusayo Oyebola Ajao", date: "May 12, 2026", duration: "45 min", category: "Evangelism",  thumbnail: "/images/content/serm_img2.jpg", youtubeId: "xImpyYRVGOc" },
+  { id: 3, title: "Walking in the Spirit",                   pastor: "Apostle Olusayo Oyebola Ajao", date: "May 5, 2026",  duration: "48 min", category: "Holy Spirit", thumbnail: "/images/content/serm_img3.jpg", youtubeId: "xImpyYRVGOc" },
+  { id: 4, title: "The Power of Prayer",                     pastor: "Apostle Olusayo Oyebola Ajao", date: "Apr 28, 2026", duration: "40 min", category: "Prayer",      thumbnail: "/images/content/serm_img4.jpg", youtubeId: "xImpyYRVGOc" },
+  { id: 5, title: "Delight Yourself in the Lord",            pastor: "Apostle Olusayo Oyebola Ajao", date: "Apr 21, 2026", duration: "55 min", category: "Faith",       thumbnail: "/images/content/serm_img5.jpg", youtubeId: "xImpyYRVGOc" },
 ];
 
 const BLOG_POSTS = [
-  { id: 1, title: "Lord of Our Life & Our Salvation",        date: "May 15, 2026", author: "Pastor Oyebola Ajao", image: "/images/content/blog_img1.jpg",   excerpt: "Discover how placing God at the centre of your life transforms every aspect of your daily walk and fills every corner with His light..." },
+  { id: 1, title: "Lord of Our Life & Our Salvation",        date: "May 15, 2026", author: "Apostle Olusayo Oyebola Ajao", image: "/images/content/blog_img1.jpg",   excerpt: "Discover how placing God at the centre of your life transforms every aspect of your daily walk and fills every corner with His light..." },
   { id: 2, title: "The Joy of Community Service",            date: "May 10, 2026", author: "Life Brand Church",   image: "/images/content/blog_img2.jpg",   excerpt: "Our recent outreach in Ogba showed the power of love in action. Read how lives were touched, souls were saved, and hope was restored..." },
   { id: 3, title: "Children's Adoption Ministry Update",     date: "May 5, 2026",  author: "Youth Ministry",     image: "/images/content/event_img1.jpg",  excerpt: "The Lord is moving through our children's ministry. Testimonies from families who were blessed by the love of God made practical..." },
-  { id: 4, title: "Faith Develops Perseverance",             date: "Apr 28, 2026", author: "Pastor Oyebola Ajao", image: "/images/content/event_img2.jpg",  excerpt: "In seasons of trial, we discover the depth of our faith and the faithfulness of God who never fails and never forsakes His people..." },
+  { id: 4, title: "Faith Develops Perseverance",             date: "Apr 28, 2026", author: "Apostle Olusayo Oyebola Ajao", image: "/images/content/event_img2.jpg",  excerpt: "In seasons of trial, we discover the depth of our faith and the faithfulness of God who never fails and never forsakes His people..." },
 ];
 
 const MINISTRIES_DETAIL = [
@@ -273,10 +273,10 @@ export default function SermonsPage() {
               "Life Brand Church provides tools, teams, and times to help individuals — and the church family as a whole — pray. Prayer is vitally important to your relationship with God."
             </p>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14 }}>
-              <img src="/images/content/client_img.jpg" alt="Pastor Oyebola Ajao" style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--red)" }}
+              <img src="/images/content/client_img.jpg" alt="Apostle Olusayo Oyebola Ajao" style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--red)" }}
                 onError={(e) => { e.target.style.display = "none"; }} />
               <div style={{ textAlign: "left" }}>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", fontWeight: 700, color: "var(--text)" }}>Pastor Oyebola Ajao</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", fontWeight: 700, color: "var(--text)" }}>Apostle Olusayo Oyebola Ajao</div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", color: "var(--red)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Senior Pastor</div>
               </div>
             </div>
