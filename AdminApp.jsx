@@ -178,18 +178,22 @@ const Icons = {
 
 // ─── Admin Login ──────────────────────────────────────────────────────────────
 function AdminLogin() {
-  const [email, setEmail]   = useState("");
-  const [pw, setPw]         = useState("");
-  const [err, setErr]       = useState("");
+  const user = useAdmin();
+  const [email, setEmail]     = useState("");
+  const [pw, setPw]           = useState("");
+  const [err, setErr]         = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+
+  // Already signed in → go straight to dashboard
+  if (user) return <Navigate to="/admin/dashboard" replace />;
 
   const submit = async (e) => {
     e.preventDefault();
     setErr(""); setLoading(true);
     try {
       await login(email, pw);
-      navigate("/admin/dashboard");
+      // Don't navigate here — onAuthStateChanged will fire, update user,
+      // re-render this component, hit the redirect above, and go to dashboard.
     } catch (ex) {
       setErr(ex.message.replace("Firebase: ", "").replace(/\(.*\)/, "").trim());
     } finally {
@@ -263,7 +267,7 @@ function AdminLayout({ children, title }) {
         </nav>
         <div className="ar-footer">
           <div className="ar-user-email">{user?.email}</div>
-          <button className="ar-logout" onClick={() => { logout(); navigate("/admin/login"); }}>
+          <button className="ar-logout" onClick={() => logout().then(() => navigate("/admin/login"))}>
             {Icons.logout} Sign Out
           </button>
         </div>
@@ -819,7 +823,7 @@ export default function AdminApp() {
         <Route path="events"    element={<Guard><AdminEvents /></Guard>} />
         <Route path="sermons"   element={<Guard><AdminSermons /></Guard>} />
         <Route path="blog"      element={<Guard><AdminBlog /></Guard>} />
-        <Route path="*"         element={<Navigate to="dashboard" replace />} />
+        <Route path="*"         element={<Navigate to="/admin/login" replace />} />
       </Routes>
     </AuthProvider>
   );
