@@ -15,7 +15,7 @@ import AppRouter from "./AppRouter.jsx";
 const SERVICES = [
   { day: "Sunday", time: "8:00 AM - 9:00 AM",   name: "Worker's Prayer",       desc: "Traditional morning worship — hymns, prayer and the preaching of God's Word. for God's workers" },
   { day: "Sunday", time: "9:00 AM - 11:00 AM",  name: "Church Service",      desc: "Contemporary praise and worship with live music, powerful ministry and fellowship." },
-  { day: "Thursday", time: "8:00 AM - 9:00 AM", name: "A Prayer Programme for Busniness Owners and Entrepreneur " },
+  { day: "Thursday", time: "8:00 AM - 9:00 AM", name: "Dews from Heaven",      desc:"A Prayer Programme for Busniness Owners and Entrepreneur " },
    { day: "Every First Friday", time: "11:00 PM" ,name: "Ephphatha Night",      desc: "Heaven shall be opened for HIS POWER in the mighty name of JESUS CHRIST." },
 ];
 
