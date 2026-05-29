@@ -974,7 +974,7 @@ export function HomePage() {
                 {/* Red accent badge */}
                 <div style={{ position: "absolute", bottom: 20, left: 20, background: "var(--red)", color: "var(--white)", padding: "10px 18px", borderRadius: 2 }}>
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 2 }}>Lead Pastor</div>
-                  <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "0.98rem", fontWeight: 400 }}>Oyebola Ajao</div>
+                  <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "0.98rem", fontWeight: 400 }}>Apolstle Olusayo Oyebola Ajao</div>
                 </div>
               </div>
             </FadeIn>
