@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { HashRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import AboutPage from "./AboutPage.jsx";
-import GalleryPage from "./GalleryPage.jsx";
-import SermonsPage from "./SermonsPage.jsx";
-import EventsPage from "./EventsPage.jsx";
-import AdminApp from "./AdminApp.jsx";
+import { HashRouter as Router, useNavigate, useLocation } from "react-router-dom";
+import AppRouter from "./AppRouter.jsx";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -510,11 +506,7 @@ function Nav() {
     } else if (item === "Events") {
       navigate("/events"); window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (item === "Contact") {
-      if (location.pathname !== "/") {
-        navigate("/", { state: { scrollTo: "contact" } });
-      } else {
-        document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-      }
+      navigate("/contact"); window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -523,7 +515,8 @@ function Nav() {
     if (item === "About") return location.pathname === "/about";
     if (item === "Gallery") return location.pathname === "/gallery";
     if (item === "Sermons") return location.pathname === "/sermons";
-    if (item === "Events") return location.pathname === "/events";
+    if (item === "Events")  return location.pathname === "/events";
+    if (item === "Contact") return location.pathname === "/contact";
     return false;
   };
 
@@ -825,7 +818,7 @@ function Footer({ onNav }) {
 
 // ─── HomePage ────────────────────────────────────────────────────────────────
 
-function HomePage() {
+export function HomePage() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const location = useLocation();
   const navigate = useNavigate();
@@ -976,7 +969,7 @@ function HomePage() {
           <div className="about-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
             <FadeIn>
               <div style={{ position: "relative", borderRadius: 4, overflow: "hidden" }}>
-                <img src="/images/content/about_img.jpg" alt="Life Brand Church community" style={{ width: "100%", minHeight: 380, objectFit: "cover", borderRadius: 4, display: "block" }} onError={(e) => { e.target.style.background = "var(--cream-dim)"; e.target.style.minHeight = "380px"; }} />
+                <img src="/images/content/pst_Ajao.jpg" alt="Life Brand Church community" style={{ width: "100%", minHeight: 380, objectFit: "cover", borderRadius: 4, display: "block" }} onError={(e) => { e.target.style.background = "var(--cream-dim)"; e.target.style.minHeight = "380px"; }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,70,140,0.3), transparent)", borderRadius: 4, pointerEvents: "none" }} />
                 {/* Red accent badge */}
                 <div style={{ position: "absolute", bottom: 20, left: 20, background: "var(--red)", color: "var(--white)", padding: "10px 18px", borderRadius: 2 }}>
@@ -1240,14 +1233,7 @@ function AppContent() {
     <div style={{ fontFamily: "'DM Sans', sans-serif", color: "var(--text)", background: "var(--cream)" }}>
       <ScrollToTop />
       <Nav />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/gallery" element={<GalleryPage />} />
-        <Route path="/sermons" element={<SermonsPage />} />
-        <Route path="/events" element={<EventsPage />} />
-        <Route path="/admin/*" element={<AdminApp />} />
-      </Routes>
+      <AppRouter />
       <Footer onNav={handleNav} />
     </div>
   );
