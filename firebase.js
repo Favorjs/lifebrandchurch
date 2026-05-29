@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
 } from "firebase/auth";
@@ -7,6 +7,7 @@ import {
   doc, getDocs, query, orderBy, serverTimestamp, onSnapshot,
 } from "firebase/firestore";
 
+// ─── Guard: only initialise when all required env vars are present ────────────
 const cfg = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -16,24 +17,48 @@ const cfg = {
   appId:             import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(cfg);
-export const auth = getAuth(app);
-export const db   = getFirestore(app);
+const isConfigured = Object.values(cfg).every(Boolean);
+
+let app, auth, db;
+
+if (isConfigured) {
+  // Avoid double-initialisation during hot-module reloads
+  app  = getApps().length ? getApps()[0] : initializeApp(cfg);
+  auth = getAuth(app);
+  db   = getFirestore(app);
+} else {
+  // Provide dummy stubs so the rest of the app doesn't crash while
+  // the .env file is being set up.
+  auth = null;
+  db   = null;
+  if (import.meta.env.DEV) {
+    console.warn(
+      "[firebase.js] Firebase not configured — add your keys to .env.local\n" +
+      "Missing:", Object.entries(cfg).filter(([,v]) => !v).map(([k]) => k).join(", ")
+    );
+  }
+}
+
+export { auth, db };
 
 // ─── Auth helpers ────────────────────────────────────────────────────────────
 export const login  = (email, pw) => signInWithEmailAndPassword(auth, email, pw);
 export const logout = ()          => signOut(auth);
-export const onAuth = (cb)        => onAuthStateChanged(auth, cb);
+export const onAuth = (cb) => {
+  if (!auth) { cb(null); return () => {}; }
+  return onAuthStateChanged(auth, cb);
+};
 
 // ─── Firestore CRUD ──────────────────────────────────────────────────────────
 export const COLS = {
-  gallery:   "gallery",
-  events:    "events",
-  sermons:   "sermons",
-  blogs:     "blogs",
+  gallery: "gallery",
+  events:  "events",
+  sermons: "sermons",
+  blogs:   "blogs",
 };
 
 export async function getAll(col) {
+  if (!db) return [];
   try {
     const q    = query(collection(db, col), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
@@ -43,11 +68,23 @@ export async function getAll(col) {
   }
 }
 
-export const addItem    = (col, data)     => addDoc(collection(db, col), { ...data, createdAt: serverTimestamp() });
-export const updateItem = (col, id, data) => updateDoc(doc(db, col, id), { ...data, updatedAt: serverTimestamp() });
-export const deleteItem = (col, id)       => deleteDoc(doc(db, col, id));
+export const addItem = (col, data) => {
+  if (!db) return Promise.reject(new Error("Firebase not configured"));
+  return addDoc(collection(db, col), { ...data, createdAt: serverTimestamp() });
+};
+
+export const updateItem = (col, id, data) => {
+  if (!db) return Promise.reject(new Error("Firebase not configured"));
+  return updateDoc(doc(db, col, id), { ...data, updatedAt: serverTimestamp() });
+};
+
+export const deleteItem = (col, id) => {
+  if (!db) return Promise.reject(new Error("Firebase not configured"));
+  return deleteDoc(doc(db, col, id));
+};
 
 export function subscribe(col, cb) {
+  if (!db) { cb([]); return () => {}; }
   const q = query(collection(db, col), orderBy("createdAt", "desc"));
   return onSnapshot(q, (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
 }

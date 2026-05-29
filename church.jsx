@@ -8,6 +8,14 @@ import AdminApp from "./AdminApp.jsx";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
+
+
+
+
+
+
+
+
 const SERVICES = [
   { day: "Sunday", time: "8:00 AM",   name: "First Service",       desc: "Traditional morning worship — hymns, prayer and the preaching of God's Word." },
   { day: "Sunday", time: "10:30 AM",  name: "Second Service",      desc: "Contemporary praise and worship with live music, powerful ministry and fellowship." },
