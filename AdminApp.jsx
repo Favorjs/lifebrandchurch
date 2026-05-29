@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, createContext, useRef } from "react";
-import { Routes, Route, NavLink, Navigate, useNavigate } from "react-router-dom";
+import { Route, NavLink, Navigate, useNavigate, Outlet } from "react-router-dom";
 import { auth, db, login, logout, onAuth, addItem, updateItem, deleteItem, subscribe, COLS } from "./firebase.js";
 import { uploadFile } from "./cloudinaryUpload.js";
 
@@ -13,7 +13,7 @@ function AuthProvider({ children }) {
   return <AuthCtx.Provider value={user}>{children}</AuthCtx.Provider>;
 }
 
-function Guard({ children }) {
+export function Guard({ children }) {
   const user = useAdmin();
   if (user === undefined) return <AdminSpinner />;
   if (!user) return <Navigate to="/admin/login" replace />;
@@ -177,7 +177,7 @@ const Icons = {
 };
 
 // ─── Admin Login ──────────────────────────────────────────────────────────────
-function AdminLogin() {
+export function AdminLogin() {
   const user = useAdmin();
   const [email, setEmail]     = useState("");
   const [pw, setPw]           = useState("");
@@ -245,7 +245,6 @@ function AdminLayout({ children, title }) {
 
   return (
     <div className="ar">
-      <style>{ADMIN_CSS}</style>
       {/* Sidebar */}
       <aside className="ar-side">
         <div className="ar-logo">
@@ -327,7 +326,7 @@ function UploadZone({ onUpload, accept = "image/*", folder = "life-brand-church"
 }
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
-function AdminDashboard() {
+export function AdminDashboard() {
   const [counts, setCounts] = useState({ gallery: 0, events: 0, sermons: 0, blogs: 0 });
 
   useEffect(() => {
@@ -377,7 +376,7 @@ function AdminDashboard() {
 // ─── Gallery Admin ─────────────────────────────────────────────────────────────
 const GALLERY_CATS = ["Worship", "Events", "Outreach", "Youth", "Community"];
 
-function AdminGallery() {
+export function AdminGallery() {
   const [items,  setItems]  = useState([]);
   const [form,   setForm]   = useState({ alt: "", category: "Worship" });
   const [preview, setPreview] = useState(null); // uploaded cloudinary result
@@ -473,7 +472,7 @@ const EVENT_CATS = ["Worship", "Youth", "Outreach", "Study", "Arts", "Fellowship
 const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 const EMPTY_EVENT = { title: "", month: "JUN", day: "01", time: "", location: "", desc: "", category: "Worship", featured: false, image: "" };
 
-function AdminEvents() {
+export function AdminEvents() {
   const [items,  setItems]  = useState([]);
   const [modal,  setModal]  = useState(false);
   const [form,   setForm]   = useState(EMPTY_EVENT);
@@ -596,7 +595,7 @@ function AdminEvents() {
 const SERMON_CATS = ["Grace", "Faith", "Prayer", "Holy Spirit", "Evangelism", "Healing", "Worship"];
 const EMPTY_SERMON = { title: "", pastor: "Apostle Olusayo Oyebola Ajao", date: "", duration: "", category: "Grace", youtubeId: "", thumbnail: "" };
 
-function AdminSermons() {
+export function AdminSermons() {
   const [items,  setItems]  = useState([]);
   const [modal,  setModal]  = useState(false);
   const [form,   setForm]   = useState(EMPTY_SERMON);
@@ -711,7 +710,7 @@ function AdminSermons() {
 // ─── Blog Admin ───────────────────────────────────────────────────────────────
 const EMPTY_BLOG = { title: "", author: "Apostle Olusayo Oyebola Ajao", date: "", image: "", excerpt: "", content: "" };
 
-function AdminBlog() {
+export function AdminBlog() {
   const [items,  setItems]  = useState([]);
   const [modal,  setModal]  = useState(false);
   const [form,   setForm]   = useState(EMPTY_BLOG);
@@ -812,19 +811,12 @@ function AdminBlog() {
   );
 }
 
-// ─── Admin App (router) ───────────────────────────────────────────────────────
+// ─── Admin App (auth wrapper) ─────────────────────────────────────────────────
 export default function AdminApp() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="login"     element={<AdminLogin />} />
-        <Route path="dashboard" element={<Guard><AdminDashboard /></Guard>} />
-        <Route path="gallery"   element={<Guard><AdminGallery /></Guard>} />
-        <Route path="events"    element={<Guard><AdminEvents /></Guard>} />
-        <Route path="sermons"   element={<Guard><AdminSermons /></Guard>} />
-        <Route path="blog"      element={<Guard><AdminBlog /></Guard>} />
-        <Route path="*"         element={<Navigate to="/admin/login" replace />} />
-      </Routes>
+      <style>{ADMIN_CSS}</style>
+      <Outlet />
     </AuthProvider>
   );
 }

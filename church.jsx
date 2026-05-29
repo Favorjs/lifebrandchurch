@@ -1230,12 +1230,14 @@ function AppContent() {
     }
   };
 
+  const isAdmin = location.pathname.startsWith("/admin");
+
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", color: "var(--text)", background: "var(--cream)" }}>
       <ScrollToTop />
-      <Nav />
+      {!isAdmin && <Nav />}
       <AppRouter />
-      <Footer onNav={handleNav} />
+      {!isAdmin && <Footer onNav={handleNav} />}
     </div>
   );
 }
