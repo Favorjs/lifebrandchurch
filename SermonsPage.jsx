@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FadeIn, PageHero, DarkSection } from "./church.jsx";
-import { subscribe, COLS } from "./firebase.js";
+import { subscribe, subscribeSetting, COLS } from "./firebase.js";
 
 const FALLBACK_SERMONS = [
   { id: 1, title: "The Law Demands, but Grace Supplies",    pastor: "Apostle Olusayo Oyebola Ajao", date: "May 19, 2026", duration: "52 min", category: "Grace",       thumbnail: "/images/content/serm_img1.jpg", youtubeId: "xImpyYRVGOc" },
@@ -43,11 +43,15 @@ const MINISTRIES_DETAIL = [
 export default function SermonsPage() {
   const [activeVideo, setActiveVideo] = useState(null);
   const [activeSermonsTab, setActiveSermonsTab] = useState("All");
-  const [fbSermons, setFbSermons] = useState(null);
-  const [fbBlogs, setFbBlogs] = useState(null);
+  const [fbSermons,   setFbSermons]   = useState(null);
+  const [fbBlogs,     setFbBlogs]     = useState(null);
+  const [sermonCats,  setSermonCats]  = useState(["All", "Grace", "Prayer", "Faith", "Holy Spirit", "Evangelism"]);
 
   useEffect(() => subscribe(COLS.sermons, setFbSermons), []);
   useEffect(() => subscribe(COLS.blogs,   setFbBlogs),   []);
+  useEffect(() => subscribeSetting("sermon_cats", (d) => {
+    if (d?.cats?.length) setSermonCats(["All", ...d.cats]);
+  }), []);
 
   const SERMONS    = fbSermons !== null && fbSermons.length > 0 ? fbSermons : FALLBACK_SERMONS;
   const BLOG_POSTS = fbBlogs   !== null && fbBlogs.length   > 0 ? fbBlogs   : FALLBACK_BLOGS;
@@ -163,7 +167,7 @@ export default function SermonsPage() {
                 <h2 className="section-title">All Messages</h2>
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {["All", "Grace", "Prayer", "Faith", "Holy Spirit", "Evangelism"].map((tab) => (
+                {sermonCats.map((tab) => (
                   <button
                     key={tab}
                     className={`filter-btn${activeSermonsTab === tab ? " active" : ""}`}

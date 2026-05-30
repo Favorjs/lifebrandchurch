@@ -450,6 +450,12 @@ export function AdminGallery() {
   };
 
   const removeCat = async (cat) => {
+    const count = items.filter((i) => i.category === cat).length;
+    if (count > 0) {
+      alert(`Cannot remove "${cat}" — ${count} photo${count !== 1 ? "s" : ""} still use this tab. Delete those photos first.`);
+      return;
+    }
+    if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
     const next = cats.filter((c) => c !== cat);
     const saved = next.length ? next : DEFAULT_GALLERY_CATS;
     setCats(saved);
@@ -642,26 +648,60 @@ export function AdminGallery() {
         </div>
       </div>
 
-      {/* ── Existing photos grid ── */}
+      {/* ── Photos grouped by category ── */}
       <div className="ar-card">
         <div className="ar-card-header">
           <span className="ar-card-title">All Photos ({items.length})</span>
         </div>
         <div className="ar-card-body">
-          <div className="ar-gallery-grid">
-            {items.map((item) => (
-              <div className="ar-gallery-item" key={item.id}>
-                <img src={item.url} alt={item.alt} />
-                <div className="ar-gallery-item-overlay">
-                  <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={() => remove(item.id)}>{Icons.trash}</button>
+          {items.length === 0 && (
+            <p style={{ color: "#94a3b8", textAlign: "center", padding: "32px 0" }}>No photos yet. Upload your first photo above.</p>
+          )}
+          {cats.map((cat) => {
+            const catItems = items.filter((i) => i.category === cat);
+            if (!catItems.length) return null;
+            return (
+              <div key={cat} style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #f1f5f9" }}>
+                  <span className="ar-badge ar-badge-blue" style={{ fontSize: "0.75rem" }}>{cat}</span>
+                  <span style={{ fontSize: "0.78rem", color: "#94a3b8" }}>{catItems.length} photo{catItems.length !== 1 ? "s" : ""}</span>
                 </div>
-                <div style={{ position: "absolute", bottom: 6, left: 6 }}>
-                  <span className="ar-badge ar-badge-blue" style={{ fontSize: "0.62rem" }}>{item.category}</span>
+                <div className="ar-gallery-grid">
+                  {catItems.map((item) => (
+                    <div className="ar-gallery-item" key={item.id}>
+                      <img src={item.url} alt={item.alt} />
+                      <div className="ar-gallery-item-overlay">
+                        <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={() => remove(item.id)}>{Icons.trash}</button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-          {items.length === 0 && <p style={{ color: "#94a3b8", textAlign: "center", padding: "32px 0" }}>No photos yet. Upload your first photo above.</p>}
+            );
+          })}
+          {/* Photos whose category was deleted — show under "Other" */}
+          {(() => {
+            const other = items.filter((i) => !cats.includes(i.category));
+            if (!other.length) return null;
+            return (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid #f1f5f9" }}>
+                  <span className="ar-badge ar-badge-yellow" style={{ fontSize: "0.75rem" }}>Other</span>
+                  <span style={{ fontSize: "0.78rem", color: "#94a3b8" }}>{other.length} photo{other.length !== 1 ? "s" : ""}</span>
+                </div>
+                <div className="ar-gallery-grid">
+                  {other.map((item) => (
+                    <div className="ar-gallery-item" key={item.id}>
+                      <img src={item.url} alt={item.alt} />
+                      <div className="ar-gallery-item-overlay">
+                        <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={() => remove(item.id)}>{Icons.trash}</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </AdminLayout>
@@ -696,11 +736,19 @@ export function AdminEvents() {
   };
 
   const removeCat = async (cat) => {
+    const count = items.filter((i) => i.category === cat).length;
+    if (count > 0) {
+      alert(`Cannot remove "${cat}" — ${count} event${count !== 1 ? "s" : ""} still use this tab. Delete those events first.`);
+      return;
+    }
+    if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
     const next = cats.filter((c) => c !== cat);
     const saved = next.length ? next : DEFAULT_EVENT_CATS;
     setCats(saved);
     await setSetting("event_cats", { cats: saved }).catch(() => setCats(cats));
   };
+
+  const [activeFilter, setActiveFilter] = useState("All");
 
   const openAdd  = ()      => { setForm({ title: "", month: "JUN", day: "01", time: "", location: "", desc: "", category: cats[0] || "Worship", featured: false, image: "" }); setEditId(null); setModal(true); };
   const openEdit = (item)  => { setForm({ ...item }); setEditId(item.id); setModal(true); };
@@ -750,11 +798,26 @@ export function AdminEvents() {
           <span className="ar-card-title">Events ({items.length})</span>
           <button className="ar-btn ar-btn-primary" onClick={openAdd}>{Icons.plus} Add Event</button>
         </div>
+        {/* Category filter tabs */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 22px", borderBottom: "1px solid #f1f5f9" }}>
+          {["All", ...cats].map((cat) => {
+            const count = cat === "All" ? items.length : items.filter((i) => i.category === cat).length;
+            return (
+              <button
+                key={cat}
+                className={`ar-btn ar-btn-sm ${activeFilter === cat ? "ar-btn-primary" : "ar-btn-secondary"}`}
+                onClick={() => setActiveFilter(cat)}
+              >
+                {cat} <span style={{ opacity: 0.65, marginLeft: 4 }}>({count})</span>
+              </button>
+            );
+          })}
+        </div>
         <div className="ar-table-wrap" style={{ overflowX: "auto" }}>
           <table className="ar-table">
             <thead><tr><th>Image</th><th>Date</th><th>Title</th><th>Category</th><th>Featured</th><th>Actions</th></tr></thead>
             <tbody>
-              {items.map((e) => (
+              {(activeFilter === "All" ? items : items.filter((e) => e.category === activeFilter)).map((e) => (
                 <tr key={e.id}>
                   <td>{e.image ? <img src={e.image} alt="" /> : <div className="ar-thumb-placeholder">📅</div>}</td>
                   <td><strong>{e.month} {e.day}</strong></td>
@@ -841,20 +904,47 @@ export function AdminEvents() {
 }
 
 // ─── Sermons Admin ────────────────────────────────────────────────────────────
-const SERMON_CATS = ["Grace", "Faith", "Prayer", "Holy Spirit", "Evangelism", "Healing", "Worship"];
-const EMPTY_SERMON = { title: "", pastor: "Apostle Olusayo Oyebola Ajao", date: "", duration: "", category: "Grace", youtubeId: "", thumbnail: "" };
+const DEFAULT_SERMON_CATS = ["Grace", "Faith", "Prayer", "Holy Spirit", "Evangelism", "Healing", "Worship"];
 
 export function AdminSermons() {
-  const [items,  setItems]  = useState([]);
-  const [modal,  setModal]  = useState(false);
-  const [form,   setForm]   = useState(EMPTY_SERMON);
-  const [editId, setEditId] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [items,        setItems]        = useState([]);
+  const [modal,        setModal]        = useState(false);
+  const [cats,         setCats]         = useState(DEFAULT_SERMON_CATS);
+  const [newCat,       setNewCat]       = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [form,         setForm]         = useState({ title: "", pastor: "Apostle Olusayo Oyebola Ajao", date: "", duration: "", category: DEFAULT_SERMON_CATS[0], youtubeId: "", thumbnail: "" });
+  const [editId,       setEditId]       = useState(null);
+  const [saving,       setSaving]       = useState(false);
 
   useEffect(() => subscribe(COLS.sermons, setItems), []);
+  useEffect(() => subscribeSetting("sermon_cats", (d) => {
+    if (d?.cats?.length) setCats(d.cats);
+  }), []);
 
-  const openAdd  = ()     => { setForm(EMPTY_SERMON); setEditId(null); setModal(true); };
-  const openEdit = (item) => { setForm({ ...item });  setEditId(item.id); setModal(true); };
+  const addCat = async () => {
+    const t = newCat.trim();
+    if (!t || cats.includes(t)) return;
+    const next = [...cats, t];
+    setCats(next);
+    setNewCat("");
+    await setSetting("sermon_cats", { cats: next }).catch(() => setCats(cats));
+  };
+
+  const removeCat = async (cat) => {
+    const count = items.filter((i) => i.category === cat).length;
+    if (count > 0) {
+      alert(`Cannot remove "${cat}" — ${count} sermon${count !== 1 ? "s" : ""} still use this tab. Delete those sermons first.`);
+      return;
+    }
+    if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
+    const next = cats.filter((c) => c !== cat);
+    const saved = next.length ? next : DEFAULT_SERMON_CATS;
+    setCats(saved);
+    await setSetting("sermon_cats", { cats: saved }).catch(() => setCats(cats));
+  };
+
+  const openAdd  = ()     => { setForm({ title: "", pastor: "Apostle Olusayo Oyebola Ajao", date: "", duration: "", category: cats[0] || "Grace", youtubeId: "", thumbnail: "" }); setEditId(null); setModal(true); };
+  const openEdit = (item) => { setForm({ ...item }); setEditId(item.id); setModal(true); };
   const close    = ()     => setModal(false);
 
   const save = async () => {
@@ -866,18 +956,58 @@ export function AdminSermons() {
     } finally { setSaving(false); }
   };
 
+  const visible = activeFilter === "All" ? items : items.filter((s) => s.category === activeFilter);
+
   return (
     <AdminLayout title="Sermons">
+      {/* ── Category manager ── */}
+      <div className="ar-card" style={{ marginBottom: 24 }}>
+        <div className="ar-card-header">
+          <span className="ar-card-title">Sermon Categories</span>
+          <span style={{ fontSize: "0.74rem", color: "#64748b" }}>These appear as filter tabs on the public Sermons page</span>
+        </div>
+        <div className="ar-card-body">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+            {cats.map((cat) => (
+              <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, fontSize: "0.82rem", color: "#334155", fontWeight: 500 }}>
+                {cat}
+                <button onClick={() => removeCat(cat)} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1, padding: 0 }} title="Remove tab">×</button>
+              </span>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 8, maxWidth: 360 }}>
+            <input className="ar-input" value={newCat} onChange={(e) => setNewCat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCat()} placeholder="New category…" />
+            <button className="ar-btn ar-btn-primary" onClick={addCat} disabled={!newCat.trim()}>+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Sermons list ── */}
       <div className="ar-card">
         <div className="ar-card-header">
           <span className="ar-card-title">Sermons ({items.length})</span>
           <button className="ar-btn ar-btn-primary" onClick={openAdd}>{Icons.plus} Add Sermon</button>
         </div>
+        {/* Category filter tabs */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 22px", borderBottom: "1px solid #f1f5f9" }}>
+          {["All", ...cats].map((cat) => {
+            const count = cat === "All" ? items.length : items.filter((s) => s.category === cat).length;
+            return (
+              <button
+                key={cat}
+                className={`ar-btn ar-btn-sm ${activeFilter === cat ? "ar-btn-primary" : "ar-btn-secondary"}`}
+                onClick={() => setActiveFilter(cat)}
+              >
+                {cat} <span style={{ opacity: 0.65, marginLeft: 4 }}>({count})</span>
+              </button>
+            );
+          })}
+        </div>
         <div className="ar-table-wrap" style={{ overflowX: "auto" }}>
           <table className="ar-table">
             <thead><tr><th>Thumbnail</th><th>Title</th><th>Pastor</th><th>Date</th><th>Category</th><th>Actions</th></tr></thead>
             <tbody>
-              {items.map((s) => (
+              {visible.map((s) => (
                 <tr key={s.id}>
                   <td>{s.thumbnail ? <img src={s.thumbnail} alt="" /> : <div className="ar-thumb-placeholder">🎙️</div>}</td>
                   <td style={{ maxWidth: 220 }}>{s.title}</td>
@@ -926,16 +1056,14 @@ export function AdminSermons() {
                 <div className="ar-field">
                   <label className="ar-label">Category</label>
                   <select className="ar-input ar-select" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                    {SERMON_CATS.map((c) => <option key={c}>{c}</option>)}
+                    {cats.map((c) => <option key={c}>{c}</option>)}
                   </select>
                 </div>
               </div>
               <div className="ar-field">
                 <label className="ar-label">YouTube Video ID</label>
                 <input className="ar-input" value={form.youtubeId} onChange={(e) => setForm({ ...form, youtubeId: e.target.value })} placeholder="xImpyYRVGOc  (the part after ?v=)" />
-                <span style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: 4 }}>
-                  From youtube.com/watch?v=<strong>THIS_PART</strong>
-                </span>
+                <span style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: 4 }}>From youtube.com/watch?v=<strong>THIS_PART</strong></span>
               </div>
               <div className="ar-field">
                 <label className="ar-label">Sermon Thumbnail</label>
