@@ -100,6 +100,15 @@ export default function EventsPage() {
 
   return (
     <div>
+      <style>{`
+        @media (max-width: 600px) {
+          .ev-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+          .ev-row-btn { width: 100%; justify-content: center; }
+          .ev-email-row { flex-direction: column !important; }
+          .ev-email-row input  { border-right: 1px solid rgba(0,102,204,0.2) !important; border-radius: 2px !important; }
+          .ev-email-row button { border-radius: 2px !important; width: 100%; }
+        }
+      `}</style>
       <PageHero
         image="/images/content/event_img1.jpg"
         title="Events & Programmes"
@@ -200,7 +209,7 @@ export default function EventsPage() {
           <p style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.42)", maxWidth: 420, margin: "0 auto 32px", lineHeight: 1.75 }}>
             Subscribe to our newsletter and never miss an event, sermon or announcement from Life Brand Church.
           </p>
-          <div style={{ display: "flex", gap: 0, justifyContent: "center", maxWidth: 420, margin: "0 auto 24px" }}>
+          <div className="ev-email-row" style={{ display: "flex", gap: 0, justifyContent: "center", maxWidth: 420, margin: "0 auto 24px" }}>
             <input
               type="email"
               placeholder="Enter your email address"
@@ -273,6 +282,7 @@ function EventCard({ event }) {
 function EventRow({ event }) {
   return (
     <div
+      className="ev-row"
       style={{ display: "flex", gap: 20, padding: "18px 22px", background: "var(--white)", border: "1px solid var(--stone)", borderLeft: "3px solid var(--gold-dark)", borderRadius: "0 4px 4px 0", alignItems: "center", transition: "all 0.3s", flexWrap: "wrap" }}
       onMouseEnter={(e) => { e.currentTarget.style.borderLeftColor = "var(--red)"; e.currentTarget.style.transform = "translateX(5px)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(10,22,40,0.07)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderLeftColor = "var(--gold-dark)"; e.currentTarget.style.transform = "translateX(0)"; e.currentTarget.style.boxShadow = "none"; }}
@@ -298,7 +308,7 @@ function EventRow({ event }) {
           <span style={{ fontSize: "0.77rem", color: "var(--text-muted)" }}>📍 {event.location}</span>
         </div>
       </div>
-      <button className="btn-outline" style={{ fontSize: "0.66rem", padding: "8px 18px", flexShrink: 0 }}>Join Us</button>
+      <button className="btn-outline ev-row-btn" style={{ fontSize: "0.66rem", padding: "8px 18px", flexShrink: 0 }}>Join Us</button>
     </div>
   );
 }

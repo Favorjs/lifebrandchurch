@@ -45,6 +45,16 @@ export default function SermonsPage() {
 
   return (
     <div>
+      <style>{`
+        @media (max-width: 820px) {
+          .sm-video-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+        }
+        @media (max-width: 640px) {
+          .sm-sermon-sidebar-label { display: none; }
+          .sm-sermon-list > div { padding: 12px !important; }
+          .sm-sermon-list img { width: 56px !important; height: 38px !important; }
+        }
+      `}</style>
       <PageHero
         image="/images/content/sermons_bg.jpg"
         title="Sermons & Ministries"
@@ -59,7 +69,7 @@ export default function SermonsPage() {
             <div className="label-blue">Now Playing</div>
             <h2 className="section-title-light" style={{ marginBottom: 40 }}>Latest Sermon</h2>
           </FadeIn>
-          <div className="about-grid" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 40, alignItems: "start" }}>
+          <div className="about-grid sm-video-grid" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 40, alignItems: "start" }}>
             <FadeIn>
               <div>
                 <div className="video-container" style={{ borderRadius: 4, overflow: "hidden", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}>
@@ -88,10 +98,10 @@ export default function SermonsPage() {
             {/* Sermon list sidebar */}
             <FadeIn delay={0.15}>
               <div>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-light)", marginBottom: 16 }}>
+                <div className="sm-sermon-sidebar-label" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-light)", marginBottom: 16 }}>
                   Recent Sermons
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div className="sm-sermon-list" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {SERMONS.map((s) => (
                     <div
                       key={s.id}
