@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { HashRouter as Router, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, useNavigate, useLocation } from "react-router-dom";
 import AppRouter from "./AppRouter.jsx";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
