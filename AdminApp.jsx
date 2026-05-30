@@ -1169,6 +1169,146 @@ export function AdminSermons() {
   );
 }
 
+// ─── Rich Text Editor ─────────────────────────────────────────────────────────
+const TbSep = () => <div style={{ width: 1, height: 20, background: "#e2e8f0", margin: "0 3px", flexShrink: 0 }} />;
+
+function RichEditor({ value, onChange }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (ref.current) ref.current.innerHTML = value || "";
+  }, []); // initialise once on mount
+
+  const exec = (cmd, arg) => {
+    ref.current?.focus();
+    document.execCommand(cmd, false, arg ?? null);
+    onChange(ref.current?.innerHTML || "");
+  };
+
+  const btn = (cmd, arg, title, child) => (
+    <button
+      key={title}
+      title={title}
+      onMouseDown={(e) => { e.preventDefault(); exec(cmd, arg); }}
+      style={{ border: "none", background: "none", cursor: "pointer", padding: "5px 7px", borderRadius: 4, color: "#334155", lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = "#e2e8f0"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}
+    >{child}</button>
+  );
+
+  const SvgIcon = ({ d, d2, pts, circle }) => (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      {pts  && pts.map((p, i) => <line key={i} x1={p[0]} y1={p[1]} x2={p[2]} y2={p[3]} />)}
+      {d    && <path d={d} />}
+      {d2   && <path d={d2} />}
+      {circle && <circle cx={circle[0]} cy={circle[1]} r={circle[2]} fill="currentColor" stroke="none" />}
+    </svg>
+  );
+
+  return (
+    <div style={{ border: "1px solid #e2e8f0", borderRadius: 6, overflow: "hidden", background: "#fff" }}>
+      {/* ── Toolbar ── */}
+      <div style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0", padding: "6px 10px", display: "flex", gap: 1, flexWrap: "wrap", alignItems: "center" }}>
+
+        {/* Text style */}
+        {btn("bold",          null, "Bold",        <b style={{ fontFamily: "Georgia,serif", fontSize: "0.88rem" }}>B</b>)}
+        {btn("italic",        null, "Italic",      <i style={{ fontFamily: "Georgia,serif", fontSize: "0.88rem" }}>I</i>)}
+        {btn("underline",     null, "Underline",   <u style={{ fontFamily: "Georgia,serif", fontSize: "0.88rem" }}>U</u>)}
+        {btn("strikeThrough", null, "Strikethrough", <s style={{ fontFamily: "Georgia,serif", fontSize: "0.88rem" }}>S</s>)}
+        <TbSep />
+
+        {/* Headings */}
+        {btn("formatBlock", "h2", "Heading 2",   <span style={{ fontSize: "0.72rem", fontWeight: 800 }}>H2</span>)}
+        {btn("formatBlock", "h3", "Heading 3",   <span style={{ fontSize: "0.72rem", fontWeight: 800 }}>H3</span>)}
+        {btn("formatBlock", "p",  "Normal Text", <span style={{ fontSize: "0.72rem", fontWeight: 700 }}>P</span>)}
+        <TbSep />
+
+        {/* Lists */}
+        {btn("insertUnorderedList", null, "Bullet List",
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="4" cy="6"  r="1.5" fill="currentColor" stroke="none"/>
+            <circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+            <circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+            <line x1="9" y1="6"  x2="21" y2="6"/>
+            <line x1="9" y1="12" x2="21" y2="12"/>
+            <line x1="9" y1="18" x2="21" y2="18"/>
+          </svg>
+        )}
+        {btn("insertOrderedList", null, "Numbered List",
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <line x1="10" y1="6"  x2="21" y2="6"/>
+            <line x1="10" y1="12" x2="21" y2="12"/>
+            <line x1="10" y1="18" x2="21" y2="18"/>
+            <path d="M4 4v4" strokeWidth="1.5"/><line x1="3" y1="8" x2="5" y2="8" strokeWidth="1.5"/>
+            <path d="M3 13h2v1l-2 1.5h2" strokeWidth="1.2"/>
+            <path d="M3 19h2l-2 3h2" strokeWidth="1.2"/>
+          </svg>
+        )}
+        <TbSep />
+
+        {/* Alignment */}
+        {btn("justifyLeft",   null, "Align Left",
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="15" y2="12"/>
+            <line x1="3" y1="18" x2="18" y2="18"/>
+          </svg>
+        )}
+        {btn("justifyCenter", null, "Align Center",
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="6" y1="12" x2="18" y2="12"/>
+            <line x1="4" y1="18" x2="20" y2="18"/>
+          </svg>
+        )}
+        {btn("justifyRight",  null, "Align Right",
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3"  y1="6"  x2="21" y2="6"/>
+            <line x1="9"  y1="12" x2="21" y2="12"/>
+            <line x1="6"  y1="18" x2="21" y2="18"/>
+          </svg>
+        )}
+        <TbSep />
+
+        {/* Divider */}
+        {btn("insertHorizontalRule", null, "Divider Line", <span style={{ fontSize: "1rem", lineHeight: 1 }}>—</span>)}
+        <TbSep />
+
+        {/* Undo / Redo */}
+        {btn("undo", null, "Undo",
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
+          </svg>
+        )}
+        {btn("redo", null, "Redo",
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/>
+          </svg>
+        )}
+      </div>
+
+      {/* ── Editable area ── */}
+      <div
+        ref={ref}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={() => onChange(ref.current?.innerHTML || "")}
+        style={{
+          minHeight: 300,
+          maxHeight: 480,
+          overflowY: "auto",
+          padding: "18px 20px",
+          outline: "none",
+          fontSize: "0.93rem",
+          lineHeight: 1.85,
+          color: "#1e293b",
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+      />
+    </div>
+  );
+}
+
 // ─── Blog Admin ───────────────────────────────────────────────────────────────
 const EMPTY_BLOG = { title: "", author: "Apostle Olusayo Oyebola Ajao", date: "", image: "", excerpt: "", content: "" };
 
@@ -1227,7 +1367,7 @@ export function AdminBlog() {
 
       {modal && (
         <div className="ar-modal-backdrop">
-          <div className="ar-modal" style={{ maxWidth: 680 }}>
+          <div className="ar-modal" style={{ maxWidth: 780 }}>
             <div className="ar-modal-header">
               <span className="ar-modal-title">{editId ? "Edit Post" : "New Blog Post"}</span>
               <button className="ar-modal-close" onClick={close}>×</button>
@@ -1258,7 +1398,11 @@ export function AdminBlog() {
               </div>
               <div className="ar-field">
                 <label className="ar-label">Full Content</label>
-                <textarea className="ar-input ar-textarea" style={{ minHeight: 200 }} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Write your full blog post here…" />
+                <RichEditor
+                  key={editId || "new"}
+                  value={form.content}
+                  onChange={(html) => setForm({ ...form, content: html })}
+                />
               </div>
             </div>
             <div className="ar-modal-footer">

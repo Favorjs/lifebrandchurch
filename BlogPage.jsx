@@ -37,6 +37,18 @@ export default function BlogPage() {
           .blog-detail-grid { grid-template-columns: 1fr !important; }
           .blog-sidebar { position: static !important; top: auto !important; }
         }
+        .blog-content { font-size: 1rem; line-height: 1.9; color: var(--text); }
+        .blog-content h2 { font-family: 'Source Serif 4', serif; font-size: 1.5rem; font-weight: 600; color: var(--charcoal); margin: 32px 0 14px; }
+        .blog-content h3 { font-family: 'Source Serif 4', serif; font-size: 1.18rem; font-weight: 600; color: var(--charcoal); margin: 24px 0 10px; }
+        .blog-content p  { margin-bottom: 16px; }
+        .blog-content ul { padding-left: 24px; margin-bottom: 16px; list-style-type: disc; }
+        .blog-content ol { padding-left: 24px; margin-bottom: 16px; list-style-type: decimal; }
+        .blog-content li { margin-bottom: 6px; }
+        .blog-content b, .blog-content strong { font-weight: 700; }
+        .blog-content i, .blog-content em     { font-style: italic; }
+        .blog-content u  { text-decoration: underline; }
+        .blog-content s  { text-decoration: line-through; }
+        .blog-content hr { border: none; border-top: 2px solid var(--stone); margin: 32px 0; }
       `}</style>
 
       <PageHero
@@ -72,10 +84,10 @@ export default function BlogPage() {
               </div>
 
               <div
-                style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "1rem", lineHeight: 1.9, color: "var(--text)", whiteSpace: "pre-wrap" }}
-              >
-                {post.content || post.excerpt}
-              </div>
+                className="blog-content"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                dangerouslySetInnerHTML={{ __html: post.content || `<p>${post.excerpt || ""}</p>` }}
+              />
 
               <div style={{ marginTop: 48, paddingTop: 32, borderTop: "1px solid var(--stone)" }}>
                 <button className="btn-outline" onClick={() => navigate("/sermons")}>← Back to Blog</button>
