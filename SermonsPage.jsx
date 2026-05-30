@@ -53,13 +53,14 @@ export default function SermonsPage() {
     if (d?.cats?.length) setSermonCats(["All", ...d.cats]);
   }), []);
 
+  // Video player only uses real Firebase sermons — never the fallback
   const SERMONS    = fbSermons !== null && fbSermons.length > 0 ? fbSermons : FALLBACK_SERMONS;
   const BLOG_POSTS = fbBlogs   !== null && fbBlogs.length   > 0 ? fbBlogs   : FALLBACK_BLOGS;
 
-  // Set first sermon as active once data is available
+  // Set active video only from real uploaded data, not fallback
   useEffect(() => {
-    if (!activeVideo && SERMONS.length > 0) setActiveVideo(SERMONS[0]);
-  }, [SERMONS]);
+    if (fbSermons && fbSermons.length > 0) setActiveVideo((v) => v ?? fbSermons[0]);
+  }, [fbSermons]);
 
   return (
     <div>
