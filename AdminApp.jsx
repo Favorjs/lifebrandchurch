@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, createContext, useRef } from "react";
 import { Route, NavLink, Navigate, useNavigate, Outlet } from "react-router-dom";
-import { auth, db, login, logout, onAuth, addItem, updateItem, deleteItem, subscribe, COLS } from "./firebase.js";
+import { auth, db, login, logout, onAuth, addItem, updateItem, deleteItem, subscribe, subscribeSetting, setSetting, COLS } from "./firebase.js";
 import { uploadFile } from "./cloudinaryUpload.js";
 
 // ─── Auth context ─────────────────────────────────────────────────────────────
@@ -422,18 +422,36 @@ export function AdminDashboard() {
 }
 
 // ─── Gallery Admin ─────────────────────────────────────────────────────────────
-const GALLERY_CATS = ["Worship", "Events", "Outreach", "Youth", "Community"];
+const DEFAULT_GALLERY_CATS = ["Worship", "Events", "Outreach", "Youth", "Community"];
 
 export function AdminGallery() {
   const [items,    setItems]    = useState([]);
-  const [queue,    setQueue]    = useState([]); // {id, file, previewUrl, alt, progress, status}
-  const [category, setCategory] = useState("Worship");
+  const [queue,    setQueue]    = useState([]);
+  const [cats,     setCats]     = useState(DEFAULT_GALLERY_CATS);
+  const [category, setCategory] = useState(DEFAULT_GALLERY_CATS[0]);
+  const [newCat,   setNewCat]   = useState("");
   const [uploading,setUploading]= useState(false);
   const [msg,      setMsg]      = useState("");
   const [drag,     setDrag]     = useState(false);
   const inputRef = useRef();
 
   useEffect(() => subscribe(COLS.gallery, setItems), []);
+  useEffect(() => subscribeSetting("gallery_cats", (d) => {
+    if (d?.cats?.length) { setCats(d.cats); setCategory((c) => d.cats.includes(c) ? c : d.cats[0]); }
+  }), []);
+
+  const addCat = async () => {
+    const t = newCat.trim();
+    if (!t || cats.includes(t)) return;
+    const next = [...cats, t];
+    await setSetting("gallery_cats", { cats: next });
+    setNewCat("");
+  };
+
+  const removeCat = async (cat) => {
+    const next = cats.filter((c) => c !== cat);
+    await setSetting("gallery_cats", { cats: next.length ? next : DEFAULT_GALLERY_CATS });
+  };
 
   const addFiles = (files) => {
     const next = Array.from(files).map((file) => ({
@@ -498,6 +516,34 @@ export function AdminGallery() {
 
   return (
     <AdminLayout title="Gallery">
+      {/* ── Category manager ── */}
+      <div className="ar-card" style={{ marginBottom: 24 }}>
+        <div className="ar-card-header">
+          <span className="ar-card-title">Filter Tabs</span>
+          <span style={{ fontSize: "0.74rem", color: "#64748b" }}>These appear as tabs on the public Gallery page</span>
+        </div>
+        <div className="ar-card-body">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+            {cats.map((cat) => (
+              <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, fontSize: "0.82rem", color: "#334155", fontWeight: 500 }}>
+                {cat}
+                <button onClick={() => removeCat(cat)} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1, padding: 0 }} title="Remove tab">×</button>
+              </span>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 8, maxWidth: 360 }}>
+            <input
+              className="ar-input"
+              value={newCat}
+              onChange={(e) => setNewCat(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addCat()}
+              placeholder="New tab name…"
+            />
+            <button className="ar-btn ar-btn-primary" onClick={addCat} disabled={!newCat.trim()}>+ Add</button>
+          </div>
+        </div>
+      </div>
+
       {/* ── Upload card ── */}
       <div className="ar-card" style={{ marginBottom: 24 }}>
         <div className="ar-card-header">
@@ -544,7 +590,7 @@ export function AdminGallery() {
                   onChange={(e) => setCategory(e.target.value)}
                   disabled={uploading}
                 >
-                  {GALLERY_CATS.map((c) => <option key={c}>{c}</option>)}
+                  {cats.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
 
@@ -620,20 +666,37 @@ export function AdminGallery() {
 }
 
 // ─── Events Admin ──────────────────────────────────────────────────────────────
-const EVENT_CATS = ["Worship", "Youth", "Outreach", "Study", "Arts", "Fellowship"];
+const DEFAULT_EVENT_CATS = ["Worship", "Youth", "Outreach", "Study", "Arts", "Fellowship"];
 const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-const EMPTY_EVENT = { title: "", month: "JUN", day: "01", time: "", location: "", desc: "", category: "Worship", featured: false, image: "" };
 
 export function AdminEvents() {
   const [items,  setItems]  = useState([]);
   const [modal,  setModal]  = useState(false);
-  const [form,   setForm]   = useState(EMPTY_EVENT);
+  const [cats,   setCats]   = useState(DEFAULT_EVENT_CATS);
+  const [newCat, setNewCat] = useState("");
+  const [form,   setForm]   = useState({ title: "", month: "JUN", day: "01", time: "", location: "", desc: "", category: DEFAULT_EVENT_CATS[0], featured: false, image: "" });
   const [editId, setEditId] = useState(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => subscribe(COLS.events, setItems), []);
+  useEffect(() => subscribeSetting("event_cats", (d) => {
+    if (d?.cats?.length) setCats(d.cats);
+  }), []);
 
-  const openAdd  = ()      => { setForm(EMPTY_EVENT); setEditId(null); setModal(true); };
+  const addCat = async () => {
+    const t = newCat.trim();
+    if (!t || cats.includes(t)) return;
+    const next = [...cats, t];
+    await setSetting("event_cats", { cats: next });
+    setNewCat("");
+  };
+
+  const removeCat = async (cat) => {
+    const next = cats.filter((c) => c !== cat);
+    await setSetting("event_cats", { cats: next.length ? next : DEFAULT_EVENT_CATS });
+  };
+
+  const openAdd  = ()      => { setForm({ title: "", month: "JUN", day: "01", time: "", location: "", desc: "", category: cats[0] || "Worship", featured: false, image: "" }); setEditId(null); setModal(true); };
   const openEdit = (item)  => { setForm({ ...item }); setEditId(item.id); setModal(true); };
   const close    = ()      => setModal(false);
 
@@ -648,6 +711,34 @@ export function AdminEvents() {
 
   return (
     <AdminLayout title="Events">
+      {/* ── Category manager ── */}
+      <div className="ar-card" style={{ marginBottom: 24 }}>
+        <div className="ar-card-header">
+          <span className="ar-card-title">Filter Tabs</span>
+          <span style={{ fontSize: "0.74rem", color: "#64748b" }}>These appear as tabs on the public Events page</span>
+        </div>
+        <div className="ar-card-body">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+            {cats.map((cat) => (
+              <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, fontSize: "0.82rem", color: "#334155", fontWeight: 500 }}>
+                {cat}
+                <button onClick={() => removeCat(cat)} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1, padding: 0 }} title="Remove tab">×</button>
+              </span>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 8, maxWidth: 360 }}>
+            <input
+              className="ar-input"
+              value={newCat}
+              onChange={(e) => setNewCat(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addCat()}
+              placeholder="New tab name…"
+            />
+            <button className="ar-btn ar-btn-primary" onClick={addCat} disabled={!newCat.trim()}>+ Add</button>
+          </div>
+        </div>
+      </div>
+
       <div className="ar-card">
         <div className="ar-card-header">
           <span className="ar-card-title">Events ({items.length})</span>
@@ -708,7 +799,7 @@ export function AdminEvents() {
                 <div className="ar-field">
                   <label className="ar-label">Category</label>
                   <select className="ar-input ar-select" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                    {EVENT_CATS.map((c) => <option key={c}>{c}</option>)}
+                    {cats.map((c) => <option key={c}>{c}</option>)}
                   </select>
                 </div>
               </div>

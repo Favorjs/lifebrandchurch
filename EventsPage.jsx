@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FadeIn, PageHero, DarkSection } from "./church.jsx";
-import { subscribe, COLS } from "./firebase.js";
+import { subscribe, subscribeSetting, COLS } from "./firebase.js";
 
-const CATEGORIES = ["All", "Worship", "Youth", "Outreach", "Study", "Arts", "Fellowship"];
+const DEFAULT_EVENT_CATS = ["Worship", "Youth", "Outreach", "Study", "Arts", "Fellowship"];
 
 const FALLBACK_EVENTS = [
   {
@@ -92,8 +92,12 @@ export default function EventsPage() {
   const [activeFilter, setActiveFilter] = useState("All");
   const navigate = useNavigate();
   const [fbEvents, setFbEvents] = useState(null);
+  const [cats,     setCats]     = useState(DEFAULT_EVENT_CATS);
 
   useEffect(() => subscribe(COLS.events, setFbEvents), []);
+  useEffect(() => subscribeSetting("event_cats", (d) => {
+    if (d?.cats?.length) setCats(d.cats);
+  }), []);
 
   const EVENTS_DATA = fbEvents !== null && fbEvents.length > 0 ? fbEvents : FALLBACK_EVENTS;
 
@@ -130,7 +134,7 @@ export default function EventsPage() {
               <div className="label" style={{ justifyContent: "center" }}>Browse Events</div>
               <h2 className="section-title" style={{ marginBottom: 28 }}>Upcoming Events</h2>
               <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-                {CATEGORIES.map((cat) => (
+                {["All", ...cats].map((cat) => (
                   <button
                     key={cat}
                     className={`filter-btn${activeFilter === cat ? " active" : ""}`}

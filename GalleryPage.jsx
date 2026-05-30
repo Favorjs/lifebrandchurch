@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { FadeIn, PageHero } from "./church.jsx";
-import { subscribe, COLS } from "./firebase.js";
+import { subscribe, subscribeSetting, COLS } from "./firebase.js";
 
-const CATEGORIES = ["All", "Worship", "Events", "Outreach", "Youth", "Community"];
+const DEFAULT_GALLERY_CATS = ["Worship", "Events", "Outreach", "Youth", "Community"];
 
 const FALLBACK_GALLERY = [
   { src: "/images/content/gallery/filter_img1.jpg", alt: "Sunday Worship Service",    category: "Worship"  },
@@ -29,8 +29,12 @@ export default function GalleryPage() {
   const [active, setActive] = useState("All");
   const [lightbox, setLightbox] = useState(null);
   const [fbItems, setFbItems] = useState(null);
+  const [cats,    setCats]    = useState(DEFAULT_GALLERY_CATS);
 
   useEffect(() => subscribe(COLS.gallery, setFbItems), []);
+  useEffect(() => subscribeSetting("gallery_cats", (d) => {
+    if (d?.cats?.length) setCats(d.cats);
+  }), []);
 
   // Normalise Firebase shape {url, alt, category} → {src, alt, category}
   const allItems = fbItems !== null && fbItems.length > 0
@@ -69,7 +73,7 @@ export default function GalleryPage() {
               <div className="label" style={{ justifyContent: "center" }}>Browse Photos</div>
               <h2 className="section-title" style={{ marginBottom: 32 }}>Photo Gallery</h2>
               <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-                {CATEGORIES.map((cat) => (
+                {["All", ...cats].map((cat) => (
                   <button
                     key={cat}
                     className={`filter-btn${active === cat ? " active" : ""}`}

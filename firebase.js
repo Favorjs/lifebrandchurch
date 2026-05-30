@@ -4,7 +4,7 @@ import {
 } from "firebase/auth";
 import {
   getFirestore, collection, addDoc, updateDoc, deleteDoc,
-  doc, getDocs, query, orderBy, serverTimestamp, onSnapshot,
+  doc, getDocs, getDoc, setDoc, query, orderBy, serverTimestamp, onSnapshot,
 } from "firebase/firestore";
 
 // ─── Guard: only initialise when all required env vars are present ────────────
@@ -82,6 +82,17 @@ export const deleteItem = (col, id) => {
   if (!db) return Promise.reject(new Error("Firebase not configured"));
   return deleteDoc(doc(db, col, id));
 };
+
+// ─── Settings (key-value documents) ─────────────────────────────────────────
+export function subscribeSetting(key, cb) {
+  if (!db) { cb(null); return () => {}; }
+  return onSnapshot(doc(db, "settings", key), (snap) => cb(snap.exists() ? snap.data() : null));
+}
+
+export function setSetting(key, data) {
+  if (!db) return Promise.reject(new Error("Firebase not configured"));
+  return setDoc(doc(db, "settings", key), data, { merge: true });
+}
 
 export function subscribe(col, cb) {
   if (!db) { cb([]); return () => {}; }
