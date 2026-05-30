@@ -1,8 +1,8 @@
 import { FadeIn, PageHero, DarkSection, useInView } from "./church.jsx";
 
 const TEAM = [
-  { name: "Apostle Olusayo Oyebola Ajao", role: "Senior Pastor", image: "/images/content/about/team1.jpg", bio: "With a heart burning for God and people, Pastor Oyebola leads Life Brand Church in its mission to give light to every nation." },
-  { name: "Associate Pastor", role: "Associate Pastor", image: "/images/content/about/team2.jpg", bio: "Serving the congregation with dedication, equipping believers for works of service and spiritual growth." },
+  { name: "Apostle Olusayo Oyebola Ajao", role: "Senior Pastor", image: "https://res.cloudinary.com/dtiz1n67r/image/upload/v1780143883/pst_Ajao_a1j1v0.jpg", bio: "With a heart burning for God and people, Pastor Oyebola leads Life Brand Church in its mission to give light to every nation." },
+  { name: "Pastor Adedunmola Ajao", role: "Associate Pastor", image: "https://res.cloudinary.com/dtiz1n67r/image/upload/v1780143302/life-brand-church/gallery/niue8encyusnufxhuhsm.jpg", bio: "Serving the congregation with dedication, equipping believers for works of service and spiritual growth." },
   { name: "Youth Pastor", role: "Youth & Children", image: "/images/content/about/team3.jpg", bio: "Passionately investing in the next generation, raising up young people who love God and live for Him." },
   { name: "Women's Leader", role: "Women's Ministry", image: "/images/content/about/team4.jpg", bio: "Building a sisterhood of faith, empowering women to discover their purpose and walk in God's grace." },
 ];

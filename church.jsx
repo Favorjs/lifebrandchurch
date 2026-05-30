@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, useNavigate, useLocation } from "react-router-dom";
 import AppRouter from "./AppRouter.jsx";
+import { subscribe, COLS } from "./firebase.js";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ const SERVICES = [
    { day: "Every First Friday", time: "11:00 PM" ,name: "Ephphatha Night",      desc: "Heaven shall be opened for HIS POWER in the mighty name of JESUS CHRIST." },
 ];
 
-const EVENTS = [
+const FALLBACK_HOME_EVENTS = [
   { month: "JUN", day: "01", title: "Sunday Worship Service",   desc: "Join us for powerful praise, worship and the preaching of God's Word." },
   { month: "JUN", day: "14", title: "Youth Prayer Rally",       desc: "A special prayer and revival meeting for teens and young adults aged 13–25." },
   { month: "JUN", day: "22", title: "Community Outreach Day",   desc: "Serving our Ogba-Ikeja community with love, food and practical care." },
@@ -821,8 +822,13 @@ function Footer({ onNav }) {
 
 export function HomePage() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [fbEvents, setFbEvents] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => subscribe(COLS.events, setFbEvents), []);
+
+  const homeEvents = fbEvents !== null && fbEvents.length > 0 ? fbEvents : FALLBACK_HOME_EVENTS;
 
   // ── Torch light effect state ──
   const heroRef = useRef(null);
@@ -970,7 +976,7 @@ export function HomePage() {
           <div className="about-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
             <FadeIn>
               <div style={{ position: "relative", borderRadius: 4, overflow: "hidden" }}>
-                <img src="/images/content/pst_Ajao.jpg" alt="Life Brand Church community" style={{ width: "100%", minHeight: 380, objectFit: "cover", borderRadius: 4, display: "block" }} onError={(e) => { e.target.style.background = "var(--cream-dim)"; e.target.style.minHeight = "380px"; }} />
+                <img src="https://res.cloudinary.com/dtiz1n67r/image/upload/v1780143883/pst_Ajao_a1j1v0.jpg" alt="Life Brand Church community" style={{ width: "100%", minHeight: 380, objectFit: "cover", borderRadius: 4, display: "block" }} onError={(e) => { e.target.style.background = "var(--cream-dim)"; e.target.style.minHeight = "380px"; }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,70,140,0.3), transparent)", borderRadius: 4, pointerEvents: "none" }} />
                 {/* Red accent badge */}
                 <div style={{ position: "absolute", bottom: 20, left: 20, background: "var(--red)", color: "var(--white)", padding: "10px 18px", borderRadius: 2 }}>
@@ -1103,7 +1109,7 @@ export function HomePage() {
               </button>
             </div>
           </FadeIn>
-          {EVENTS.slice(0, 3).map((e, i) => (
+          {homeEvents.slice(0, 3).map((e, i) => (
             <FadeIn key={i} delay={i * 0.08}>
               <div className="event-item">
                 <div style={{ background: "var(--charcoal)", borderRadius: 4, padding: "10px 8px", textAlign: "center", flexShrink: 0 }}>
@@ -1146,18 +1152,7 @@ export function HomePage() {
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.66rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--red-light)", marginBottom: 5 }}>Lead Pastor</div>
                   <div style={{ fontFamily: "'Source Serif 4', serif", fontSize: "1.05rem", color: "var(--white)" }}>Apostle Olusayo Oyebola Ajao</div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                  {[
-                    { label: "Address", value: "No 34, Ijaiye Road, Carterpillar Bus Stop,\nBtw Stanbic IBTC Bank & LG Office,\nOgba, Ikeja, Lagos, Nigeria" },
-                    { label: "Phone",   value: "+234 803 499 8775\n+61 3 2555 682 458" },
-                    { label: "Email",   value: "godlove@lifebrandchurch.com" },
-                  ].map((c) => (
-                    <div key={c.label}>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.66rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-light)", marginBottom: 5 }}>{c.label}</div>
-                      <div style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.6, whiteSpace: "pre-line" }}>{c.value}</div>
-                    </div>
-                  ))}
-                </div>
+              
               </div>
             </FadeIn>
             <FadeIn delay={0.15}>

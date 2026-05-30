@@ -425,27 +425,68 @@ export function AdminDashboard() {
 const GALLERY_CATS = ["Worship", "Events", "Outreach", "Youth", "Community"];
 
 export function AdminGallery() {
-  const [items,  setItems]  = useState([]);
-  const [form,   setForm]   = useState({ alt: "", category: "Worship" });
-  const [preview, setPreview] = useState(null); // uploaded cloudinary result
-  const [saving, setSaving]   = useState(false);
-  const [msg,    setMsg]    = useState("");
+  const [items,    setItems]    = useState([]);
+  const [queue,    setQueue]    = useState([]); // {id, file, previewUrl, alt, progress, status}
+  const [category, setCategory] = useState("Worship");
+  const [uploading,setUploading]= useState(false);
+  const [msg,      setMsg]      = useState("");
+  const [drag,     setDrag]     = useState(false);
+  const inputRef = useRef();
 
   useEffect(() => subscribe(COLS.gallery, setItems), []);
 
-  const save = async () => {
-    if (!preview) return alert("Please upload an image first.");
-    setSaving(true);
-    try {
-      await addItem(COLS.gallery, {
-        url:      preview.secure_url,
-        publicId: preview.public_id,
-        alt:      form.alt || "Church photo",
-        category: form.category,
-      });
-      setForm({ alt: "", category: "Worship" }); setPreview(null);
-      setMsg("Photo added!"); setTimeout(() => setMsg(""), 3000);
-    } finally { setSaving(false); }
+  const addFiles = (files) => {
+    const next = Array.from(files).map((file) => ({
+      id:         Math.random().toString(36).slice(2),
+      file,
+      previewUrl: URL.createObjectURL(file),
+      alt:        "",
+      progress:   0,
+      status:     "pending",
+    }));
+    setQueue((q) => [...q, ...next]);
+  };
+
+  const removeQueued = (id) => {
+    setQueue((q) => {
+      const item = q.find((i) => i.id === id);
+      if (item) URL.revokeObjectURL(item.previewUrl);
+      return q.filter((i) => i.id !== id);
+    });
+  };
+
+  const uploadAll = async () => {
+    const pending = queue.filter((i) => i.status === "pending");
+    if (!pending.length) return;
+    setUploading(true);
+
+    for (const item of pending) {
+      setQueue((q) => q.map((i) => i.id === item.id ? { ...i, status: "uploading" } : i));
+      try {
+        const result = await uploadFile(
+          item.file,
+          "life-brand-church/gallery",
+          (pct) => setQueue((q) => q.map((i) => i.id === item.id ? { ...i, progress: pct } : i)),
+        );
+        await addItem(COLS.gallery, {
+          url:      result.secure_url,
+          publicId: result.public_id,
+          alt:      item.alt || "Church photo",
+          category,
+        });
+        setQueue((q) => q.map((i) => i.id === item.id ? { ...i, status: "done", progress: 100 } : i));
+      } catch {
+        setQueue((q) => q.map((i) => i.id === item.id ? { ...i, status: "error" } : i));
+      }
+    }
+
+    setUploading(false);
+    const count = pending.length;
+    setMsg(`${count} photo${count > 1 ? "s" : ""} uploaded!`);
+    setTimeout(() => {
+      setMsg("");
+      setQueue((q) => q.filter((i) => i.status !== "done"));
+    }, 3000);
   };
 
   const remove = async (id) => {
@@ -453,43 +494,106 @@ export function AdminGallery() {
     await deleteItem(COLS.gallery, id);
   };
 
+  const pendingCount = queue.filter((i) => i.status === "pending").length;
+
   return (
     <AdminLayout title="Gallery">
-      {/* Upload form */}
+      {/* ── Upload card ── */}
       <div className="ar-card" style={{ marginBottom: 24 }}>
-        <div className="ar-card-header"><span className="ar-card-title">Upload New Photo</span></div>
+        <div className="ar-card-header">
+          <span className="ar-card-title">Upload Photos</span>
+          {queue.length > 0 && (
+            <span style={{ fontSize: "0.76rem", color: "#64748b" }}>
+              {pendingCount} pending · {queue.filter((i) => i.status === "done").length} done
+            </span>
+          )}
+        </div>
         <div className="ar-card-body">
           {msg && <div className="ar-alert ar-alert-success">{msg}</div>}
-          <div className="ar-form-row">
-            <div>
-              <UploadZone
-                folder="life-brand-church/gallery"
-                onUpload={(r) => setPreview(r)}
-              />
-              {preview && (
-                <img src={preview.secure_url} alt="preview" style={{ marginTop: 10, height: 80, borderRadius: 6, objectFit: "cover" }} />
-              )}
-            </div>
-            <div>
-              <div className="ar-field">
-                <label className="ar-label">Caption / Alt Text</label>
-                <input className="ar-input" value={form.alt} onChange={(e) => setForm({ ...form, alt: e.target.value })} placeholder="Sunday Worship Service" />
-              </div>
-              <div className="ar-field">
-                <label className="ar-label">Category</label>
-                <select className="ar-input ar-select" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+
+          {/* Drop zone */}
+          <div
+            className={`ar-upload-zone${drag ? " drag" : ""}`}
+            onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+            onDragLeave={() => setDrag(false)}
+            onDrop={(e) => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }}
+            onClick={() => inputRef.current?.click()}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              style={{ display: "none" }}
+              onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }}
+            />
+            <div className="ar-upload-zone-icon">🖼️</div>
+            <div className="ar-upload-zone-text">Click or drag to select multiple photos</div>
+            <div className="ar-upload-zone-sub">PNG, JPG, WEBP — select as many as you want</div>
+          </div>
+
+          {/* Queue */}
+          {queue.length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              {/* Category applies to all */}
+              <div className="ar-field" style={{ marginBottom: 16 }}>
+                <label className="ar-label">Category (applies to all)</label>
+                <select
+                  className="ar-input ar-select"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  disabled={uploading}
+                >
                   {GALLERY_CATS.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
-              <button className="ar-btn ar-btn-primary" onClick={save} disabled={saving || !preview}>
-                {Icons.upload} {saving ? "Saving…" : "Add to Gallery"}
-              </button>
+
+              {/* Per-image rows */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+                {queue.map((item) => {
+                  const bg     = item.status === "done" ? "#f0fdf4" : item.status === "error" ? "#fef2f2" : "#f8fafc";
+                  const border = item.status === "done" ? "#bbf7d0" : item.status === "error" ? "#fecaca" : "#e2e8f0";
+                  return (
+                    <div key={item.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "10px 14px", background: bg, border: `1px solid ${border}`, borderRadius: 8 }}>
+                      <img src={item.previewUrl} alt="" style={{ width: 60, height: 44, objectFit: "cover", borderRadius: 4, flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <input
+                          className="ar-input"
+                          value={item.alt}
+                          onChange={(e) => setQueue((q) => q.map((i) => i.id === item.id ? { ...i, alt: e.target.value } : i))}
+                          placeholder="Caption / alt text (optional)"
+                          disabled={item.status !== "pending"}
+                          style={{ marginBottom: item.status === "uploading" ? 6 : 0 }}
+                        />
+                        {item.status === "uploading" && (
+                          <div className="ar-progress">
+                            <div className="ar-progress-bar" style={{ width: `${item.progress}%` }} />
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ flexShrink: 0 }}>
+                        {item.status === "done"  && <span style={{ color: "#16a34a", fontSize: "1.1rem", fontWeight: 700 }}>✓</span>}
+                        {item.status === "error" && <span style={{ color: "#dc2626", fontSize: "0.76rem", fontWeight: 600 }}>Failed</span>}
+                        {item.status === "pending" && (
+                          <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={() => removeQueued(item.id)}>✕</button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {pendingCount > 0 && (
+                <button className="ar-btn ar-btn-primary" onClick={uploadAll} disabled={uploading}>
+                  {Icons.upload} {uploading ? "Uploading…" : `Upload ${pendingCount} Photo${pendingCount > 1 ? "s" : ""}`}
+                </button>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Grid */}
+      {/* ── Existing photos grid ── */}
       <div className="ar-card">
         <div className="ar-card-header">
           <span className="ar-card-title">All Photos ({items.length})</span>
