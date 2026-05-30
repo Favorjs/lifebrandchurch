@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FadeIn, PageHero, DarkSection } from "./church.jsx";
+import { subscribe, COLS } from "./firebase.js";
 
-const SERMONS = [
+const FALLBACK_SERMONS = [
   { id: 1, title: "The Law Demands, but Grace Supplies",    pastor: "Apostle Olusayo Oyebola Ajao", date: "May 19, 2026", duration: "52 min", category: "Grace",       thumbnail: "/images/content/serm_img1.jpg", youtubeId: "xImpyYRVGOc" },
   { id: 2, title: "Sharing Our Faith & Love To Children",   pastor: "Apostle Olusayo Oyebola Ajao", date: "May 12, 2026", duration: "45 min", category: "Evangelism",  thumbnail: "/images/content/serm_img2.jpg", youtubeId: "xImpyYRVGOc" },
   { id: 3, title: "Walking in the Spirit",                   pastor: "Apostle Olusayo Oyebola Ajao", date: "May 5, 2026",  duration: "48 min", category: "Holy Spirit", thumbnail: "/images/content/serm_img3.jpg", youtubeId: "xImpyYRVGOc" },
@@ -9,7 +10,7 @@ const SERMONS = [
   { id: 5, title: "Delight Yourself in the Lord",            pastor: "Apostle Olusayo Oyebola Ajao", date: "Apr 21, 2026", duration: "55 min", category: "Faith",       thumbnail: "/images/content/serm_img5.jpg", youtubeId: "xImpyYRVGOc" },
 ];
 
-const BLOG_POSTS = [
+const FALLBACK_BLOGS = [
   { id: 1, title: "Lord of Our Life & Our Salvation",        date: "May 15, 2026", author: "Apostle Olusayo Oyebola Ajao", image: "/images/content/blog_img1.jpg",   excerpt: "Discover how placing God at the centre of your life transforms every aspect of your daily walk and fills every corner with His light..." },
   { id: 2, title: "The Joy of Community Service",            date: "May 10, 2026", author: "Life Brand Church",   image: "/images/content/blog_img2.jpg",   excerpt: "Our recent outreach in Ogba showed the power of love in action. Read how lives were touched, souls were saved, and hope was restored..." },
   { id: 3, title: "Children's Adoption Ministry Update",     date: "May 5, 2026",  author: "Youth Ministry",     image: "/images/content/event_img1.jpg",  excerpt: "The Lord is moving through our children's ministry. Testimonies from families who were blessed by the love of God made practical..." },
@@ -40,8 +41,21 @@ const MINISTRIES_DETAIL = [
 ];
 
 export default function SermonsPage() {
-  const [activeVideo, setActiveVideo] = useState(SERMONS[0]);
+  const [activeVideo, setActiveVideo] = useState(null);
   const [activeSermonsTab, setActiveSermonsTab] = useState("All");
+  const [fbSermons, setFbSermons] = useState(null);
+  const [fbBlogs, setFbBlogs] = useState(null);
+
+  useEffect(() => subscribe(COLS.sermons, setFbSermons), []);
+  useEffect(() => subscribe(COLS.blogs,   setFbBlogs),   []);
+
+  const SERMONS    = fbSermons !== null && fbSermons.length > 0 ? fbSermons : FALLBACK_SERMONS;
+  const BLOG_POSTS = fbBlogs   !== null && fbBlogs.length   > 0 ? fbBlogs   : FALLBACK_BLOGS;
+
+  // Set first sermon as active once data is available
+  useEffect(() => {
+    if (!activeVideo && SERMONS.length > 0) setActiveVideo(SERMONS[0]);
+  }, [SERMONS]);
 
   return (
     <div>
@@ -63,7 +77,7 @@ export default function SermonsPage() {
       />
 
       {/* ── FEATURED VIDEO PLAYER ── */}
-      <DarkSection style={{ padding: "80px 24px", background: "var(--charcoal)" }}>
+      {activeVideo && <DarkSection style={{ padding: "80px 24px", background: "var(--charcoal)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto" }}>
           <FadeIn>
             <div className="label-blue">Now Playing</div>
@@ -137,7 +151,7 @@ export default function SermonsPage() {
             </FadeIn>
           </div>
         </div>
-      </DarkSection>
+      </DarkSection>}
 
       {/* ── SERMON ARCHIVE ── */}
       <section style={{ padding: "90px 24px", background: "var(--cream-dim)" }}>

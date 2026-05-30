@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FadeIn, PageHero } from "./church.jsx";
+import { subscribe, COLS } from "./firebase.js";
 
-const CATEGORIES = ["All", "Worship", "Events", "Outreach", "Youth"];
+const CATEGORIES = ["All", "Worship", "Events", "Outreach", "Youth", "Community"];
 
-const GALLERY_ITEMS = [
+const FALLBACK_GALLERY = [
   { src: "/images/content/gallery/filter_img1.jpg", alt: "Sunday Worship Service",    category: "Worship"  },
   { src: "/images/content/gallery/filter_img2.jpg", alt: "Church Community Event",    category: "Events"   },
   { src: "/images/content/gallery/filter_img3.jpg", alt: "Youth Ministry Meeting",    category: "Youth"    },
@@ -26,9 +27,17 @@ const GALLERY_ITEMS = [
 
 export default function GalleryPage() {
   const [active, setActive] = useState("All");
-  const [lightbox, setLightbox] = useState(null); // index
+  const [lightbox, setLightbox] = useState(null);
+  const [fbItems, setFbItems] = useState(null);
 
-  const filtered = active === "All" ? GALLERY_ITEMS : GALLERY_ITEMS.filter((i) => i.category === active);
+  useEffect(() => subscribe(COLS.gallery, setFbItems), []);
+
+  // Normalise Firebase shape {url, alt, category} → {src, alt, category}
+  const allItems = fbItems !== null && fbItems.length > 0
+    ? fbItems.map((i) => ({ src: i.url, alt: i.alt || "", category: i.category || "Worship" }))
+    : FALLBACK_GALLERY;
+
+  const filtered = active === "All" ? allItems : allItems.filter((i) => i.category === active);
 
   const openLightbox = (idx) => setLightbox(idx);
   const closeLightbox = () => setLightbox(null);
@@ -69,7 +78,7 @@ export default function GalleryPage() {
                     {cat}
                     {active === cat && (
                       <span style={{ marginLeft: 6, fontSize: "0.6rem" }}>
-                        ({cat === "All" ? GALLERY_ITEMS.length : GALLERY_ITEMS.filter((i) => i.category === cat).length})
+                        ({cat === "All" ? allItems.length : allItems.filter((i) => i.category === cat).length})
                       </span>
                     )}
                   </button>

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FadeIn, PageHero, DarkSection } from "./church.jsx";
+import { subscribe, COLS } from "./firebase.js";
 
 const CATEGORIES = ["All", "Worship", "Youth", "Outreach", "Study", "Arts", "Fellowship"];
 
-const EVENTS_DATA = [
+const FALLBACK_EVENTS = [
   {
     month: "JUN", day: "01", year: "2026",
     title: "Sunday Worship Service",
@@ -90,6 +91,11 @@ const EVENTS_DATA = [
 export default function EventsPage() {
   const [activeFilter, setActiveFilter] = useState("All");
   const navigate = useNavigate();
+  const [fbEvents, setFbEvents] = useState(null);
+
+  useEffect(() => subscribe(COLS.events, setFbEvents), []);
+
+  const EVENTS_DATA = fbEvents !== null && fbEvents.length > 0 ? fbEvents : FALLBACK_EVENTS;
 
   const filtered = activeFilter === "All"
     ? EVENTS_DATA
