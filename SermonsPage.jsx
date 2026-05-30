@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FadeIn, PageHero, DarkSection } from "./church.jsx";
 import { subscribe, subscribeSetting, COLS } from "./firebase.js";
 
@@ -41,6 +42,7 @@ const MINISTRIES_DETAIL = [
 ];
 
 export default function SermonsPage() {
+  const navigate = useNavigate();
   const [activeVideo, setActiveVideo] = useState(null);
   const [activeSermonsTab, setActiveSermonsTab] = useState("All");
   const [fbSermons,   setFbSermons]   = useState(null);
@@ -251,7 +253,7 @@ export default function SermonsPage() {
                     </div>
                     <h4 style={{ fontFamily: "'Source Serif 4', serif", fontSize: "1.05rem", fontWeight: 600, color: "var(--charcoal)", marginBottom: 10, lineHeight: 1.4 }}>{post.title}</h4>
                     <p style={{ fontSize: "0.84rem", lineHeight: 1.72, color: "var(--text-muted)", marginBottom: 18 }}>{post.excerpt}</p>
-                    <button className="btn-outline" style={{ fontSize: "0.68rem", padding: "8px 18px" }}>Read More</button>
+                    <button className="btn-outline" style={{ fontSize: "0.68rem", padding: "8px 18px" }} onClick={() => { navigate(`/blog/${post.id}`); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Read More</button>
                   </div>
                 </div>
               </FadeIn>

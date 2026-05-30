@@ -9,6 +9,7 @@ import GalleryPage   from "./GalleryPage.jsx";
 import SermonsPage   from "./SermonsPage.jsx";
 import EventsPage    from "./EventsPage.jsx";
 import ContactPage   from "./ContactPage.jsx";
+import BlogPage    from "./BlogPage.jsx";
 import AdminApp, {
   Guard,
   AdminLogin,
@@ -28,7 +29,8 @@ export default function AppRouter() {
       <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/sermons" element={<SermonsPage />} />
       <Route path="/events"  element={<EventsPage />} />
-      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/contact"  element={<ContactPage />} />
+      <Route path="/blog/:id" element={<BlogPage />} />
 
       {/* ── Admin routes ── */}
       <Route path="/admin" element={<AdminApp />}>

@@ -125,6 +125,22 @@ const ADMIN_CSS = `
   .ar-alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
   .ar-alert-success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
 
+  /* Custom dialog (replaces window.alert / window.confirm) */
+  .ar-dialog-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .ar-dialog { background: #fff; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(0,0,0,0.3); overflow: hidden; animation: ar-dialog-in 0.18s cubic-bezier(.22,1,.36,1); }
+  @keyframes ar-dialog-in { from { opacity: 0; transform: scale(0.93) translateY(12px); } to { opacity: 1; transform: none; } }
+  .ar-dialog-header { padding: 18px 22px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+  .ar-dialog-title { font-size: 0.98rem; font-weight: 600; color: #0f172a; }
+  .ar-dialog-close { background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 1.4rem; line-height: 1; padding: 2px 4px; border-radius: 4px; }
+  .ar-dialog-close:hover { color: #e5452b; background: #fef2f2; }
+  .ar-dialog-body { padding: 22px 24px; }
+  .ar-dialog-icon { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .ar-dialog-icon-danger { background: #fef2f2; }
+  .ar-dialog-icon-warn   { background: #fffbeb; }
+  .ar-dialog-icon-info   { background: #eff6ff; }
+  .ar-dialog-msg { font-size: 0.9rem; color: #475569; line-height: 1.65; margin: 0; }
+  .ar-dialog-footer { padding: 14px 22px; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px; }
+
   /* Login */
   .ar-login-wrap { min-height: 100vh; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
   .ar-login-box { background: #1e293b; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 40px; width: 100%; max-width: 380px; }
@@ -196,6 +212,66 @@ const ADMIN_CSS = `
 
 function AdminSpinner() {
   return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#0f172a" }}><div className="ar-spinner" /></div>;
+}
+
+// ─── Custom dialog (replaces window.alert / window.confirm) ───────────────────
+const DialogCtx = createContext(null);
+export function useDialog() { return useContext(DialogCtx); }
+
+const DlgIcons = {
+  danger: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+  warn:   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+  info:   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
+};
+
+function DialogProvider({ children }) {
+  const [dlg, setDlg] = useState(null);
+
+  const openDlg = (opts) => new Promise((resolve) => setDlg({ ...opts, resolve }));
+
+  const dialog = {
+    confirm: (opts)                         => openDlg({ type: "confirm", ...opts }),
+    alert:   (message, title, icon = "info")=> openDlg({ type: "alert", title: title || "Notice", message, icon }),
+  };
+
+  const close = (result) => { dlg?.resolve(result); setDlg(null); };
+
+  return (
+    <DialogCtx.Provider value={dialog}>
+      {children}
+      {dlg && (
+        <div className="ar-dialog-backdrop">
+          <div className="ar-dialog">
+            <div className="ar-dialog-header">
+              <span className="ar-dialog-title">{dlg.title || "Confirm"}</span>
+              <button className="ar-dialog-close" onClick={() => close(false)}>×</button>
+            </div>
+            <div className="ar-dialog-body">
+              {dlg.icon && (
+                <div className={`ar-dialog-icon ar-dialog-icon-${dlg.icon}`}>
+                  {DlgIcons[dlg.icon] || DlgIcons.info}
+                </div>
+              )}
+              <p className="ar-dialog-msg">{dlg.message}</p>
+            </div>
+            <div className="ar-dialog-footer">
+              {dlg.type === "confirm" && (
+                <button className="ar-btn ar-btn-secondary" onClick={() => close(false)}>
+                  {dlg.cancelLabel || "Cancel"}
+                </button>
+              )}
+              <button
+                className={`ar-btn ${dlg.confirmStyle === "danger" ? "ar-btn-danger" : "ar-btn-primary"}`}
+                onClick={() => close(true)}
+              >
+                {dlg.confirmLabel || "OK"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </DialogCtx.Provider>
+  );
 }
 
 // ─── Nav icons ────────────────────────────────────────────────────────────────
@@ -338,6 +414,7 @@ function UploadZone({ onUpload, accept = "image/*", folder = "life-brand-church"
   const [progress, setProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef();
+  const dialog   = useDialog();
 
   const handleFile = async (file) => {
     if (!file) return;
@@ -346,7 +423,7 @@ function UploadZone({ onUpload, accept = "image/*", folder = "life-brand-church"
       const result = await uploadFile(file, folder, setProgress);
       onUpload(result);
     } catch (e) {
-      alert("Upload failed: " + e.message);
+      dialog?.alert("Upload failed: " + e.message, "Upload Error", "danger");
     } finally {
       setUploading(false); setProgress(0);
     }
@@ -435,6 +512,7 @@ export function AdminGallery() {
   const [drag,     setDrag]     = useState(false);
   const [catError, setCatError] = useState("");
   const inputRef = useRef();
+  const dialog   = useDialog();
 
   useEffect(() => subscribe(COLS.gallery, setItems), []);
   useEffect(() => subscribeSetting("gallery_cats", (d) => {
@@ -454,10 +532,10 @@ export function AdminGallery() {
   const removeCat = async (cat) => {
     const count = items.filter((i) => i.category === cat).length;
     if (count > 0) {
-      alert(`Cannot remove "${cat}" — ${count} photo${count !== 1 ? "s" : ""} still use this tab. Delete those photos first.`);
+      await dialog.alert(`"${cat}" has ${count} photo${count !== 1 ? "s" : ""} attached. Delete those photos first before removing this tab.`, "Cannot Remove Tab", "warn");
       return;
     }
-    if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
+    if (!await dialog.confirm({ title: "Remove Tab", message: `Remove the "${cat}" tab? This cannot be undone.`, confirmLabel: "Remove", confirmStyle: "danger", cancelLabel: "Keep It", icon: "warn" })) return;
     const prev = cats;
     const next = cats.filter((c) => c !== cat);
     const saved = next.length ? next : DEFAULT_GALLERY_CATS;
@@ -521,7 +599,7 @@ export function AdminGallery() {
   };
 
   const remove = async (id) => {
-    if (!confirm("Delete this photo?")) return;
+    if (!await dialog.confirm({ title: "Delete Photo", message: "Delete this photo permanently? This cannot be undone.", confirmLabel: "Delete", confirmStyle: "danger", cancelLabel: "Cancel", icon: "danger" })) return;
     await deleteItem(COLS.gallery, id);
   };
 
@@ -721,6 +799,7 @@ export function AdminEvents() {
   const [saving, setSaving] = useState(false);
 
   const [catError, setCatError] = useState("");
+  const dialog   = useDialog();
 
   useEffect(() => subscribe(COLS.events, setItems), []);
   useEffect(() => subscribeSetting("event_cats", (d) => {
@@ -740,10 +819,10 @@ export function AdminEvents() {
   const removeCat = async (cat) => {
     const count = items.filter((i) => i.category === cat).length;
     if (count > 0) {
-      alert(`Cannot remove "${cat}" — ${count} event${count !== 1 ? "s" : ""} still use this tab. Delete those events first.`);
+      await dialog.alert(`"${cat}" has ${count} event${count !== 1 ? "s" : ""} attached. Delete those events first before removing this tab.`, "Cannot Remove Tab", "warn");
       return;
     }
-    if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
+    if (!await dialog.confirm({ title: "Remove Tab", message: `Remove the "${cat}" tab? This cannot be undone.`, confirmLabel: "Remove", confirmStyle: "danger", cancelLabel: "Keep It", icon: "warn" })) return;
     const prev = cats;
     const next = cats.filter((c) => c !== cat);
     const saved = next.length ? next : DEFAULT_EVENT_CATS;
@@ -825,7 +904,7 @@ export function AdminEvents() {
                   <td>{e.featured ? <span className="ar-badge ar-badge-green">Yes</span> : <span className="ar-badge ar-badge-yellow">No</span>}</td>
                   <td style={{ display: "flex", gap: 6 }}>
                     <button className="ar-btn ar-btn-secondary ar-btn-sm" onClick={() => openEdit(e)}>{Icons.edit} Edit</button>
-                    <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={() => { if (confirm("Delete?")) deleteItem(COLS.events, e.id); }}>{Icons.trash}</button>
+                    <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={async () => { if (await dialog.confirm({ title: "Delete Event", message: `Delete "${e.title}"? This cannot be undone.`, confirmLabel: "Delete", confirmStyle: "danger", cancelLabel: "Cancel", icon: "danger" })) deleteItem(COLS.events, e.id); }}>{Icons.trash}</button>
                   </td>
                 </tr>
               ))}
@@ -836,8 +915,8 @@ export function AdminEvents() {
       </div>
 
       {modal && (
-        <div className="ar-modal-backdrop" onClick={close}>
-          <div className="ar-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="ar-modal-backdrop">
+          <div className="ar-modal">
             <div className="ar-modal-header">
               <span className="ar-modal-title">{editId ? "Edit Event" : "Add Event"}</span>
               <button className="ar-modal-close" onClick={close}>×</button>
@@ -916,6 +995,7 @@ export function AdminSermons() {
   const [saving,       setSaving]       = useState(false);
 
   const [catError, setCatError] = useState("");
+  const dialog   = useDialog();
 
   useEffect(() => subscribe(COLS.sermons, setItems), []);
   useEffect(() => subscribeSetting("sermon_cats", (d) => {
@@ -935,10 +1015,10 @@ export function AdminSermons() {
   const removeCat = async (cat) => {
     const count = items.filter((i) => i.category === cat).length;
     if (count > 0) {
-      alert(`Cannot remove "${cat}" — ${count} sermon${count !== 1 ? "s" : ""} still use this tab. Delete those sermons first.`);
+      await dialog.alert(`"${cat}" has ${count} sermon${count !== 1 ? "s" : ""} attached. Delete those sermons first before removing this tab.`, "Cannot Remove Tab", "warn");
       return;
     }
-    if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
+    if (!await dialog.confirm({ title: "Remove Tab", message: `Remove the "${cat}" tab? This cannot be undone.`, confirmLabel: "Remove", confirmStyle: "danger", cancelLabel: "Keep It", icon: "warn" })) return;
     const prev = cats;
     const next = cats.filter((c) => c !== cat);
     const saved = next.length ? next : DEFAULT_SERMON_CATS;
@@ -1021,7 +1101,7 @@ export function AdminSermons() {
                   <td><span className="ar-badge ar-badge-blue">{s.category}</span></td>
                   <td style={{ display: "flex", gap: 6 }}>
                     <button className="ar-btn ar-btn-secondary ar-btn-sm" onClick={() => openEdit(s)}>{Icons.edit} Edit</button>
-                    <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={() => { if (confirm("Delete?")) deleteItem(COLS.sermons, s.id); }}>{Icons.trash}</button>
+                    <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={async () => { if (await dialog.confirm({ title: "Delete Sermon", message: `Delete "${s.title}"? This cannot be undone.`, confirmLabel: "Delete", confirmStyle: "danger", cancelLabel: "Cancel", icon: "danger" })) deleteItem(COLS.sermons, s.id); }}>{Icons.trash}</button>
                   </td>
                 </tr>
               ))}
@@ -1032,8 +1112,8 @@ export function AdminSermons() {
       </div>
 
       {modal && (
-        <div className="ar-modal-backdrop" onClick={close}>
-          <div className="ar-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="ar-modal-backdrop">
+          <div className="ar-modal">
             <div className="ar-modal-header">
               <span className="ar-modal-title">{editId ? "Edit Sermon" : "Add Sermon"}</span>
               <button className="ar-modal-close" onClick={close}>×</button>
@@ -1098,6 +1178,7 @@ export function AdminBlog() {
   const [form,   setForm]   = useState(EMPTY_BLOG);
   const [editId, setEditId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const dialog   = useDialog();
 
   useEffect(() => subscribe(COLS.blogs, setItems), []);
 
@@ -1134,7 +1215,7 @@ export function AdminBlog() {
                   <td style={{ fontSize: "0.8rem", color: "#64748b" }}>{b.date}</td>
                   <td style={{ display: "flex", gap: 6 }}>
                     <button className="ar-btn ar-btn-secondary ar-btn-sm" onClick={() => openEdit(b)}>{Icons.edit} Edit</button>
-                    <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={() => { if (confirm("Delete?")) deleteItem(COLS.blogs, b.id); }}>{Icons.trash}</button>
+                    <button className="ar-btn ar-btn-danger ar-btn-sm" onClick={async () => { if (await dialog.confirm({ title: "Delete Post", message: `Delete "${b.title}"? This cannot be undone.`, confirmLabel: "Delete", confirmStyle: "danger", cancelLabel: "Cancel", icon: "danger" })) deleteItem(COLS.blogs, b.id); }}>{Icons.trash}</button>
                   </td>
                 </tr>
               ))}
@@ -1145,8 +1226,8 @@ export function AdminBlog() {
       </div>
 
       {modal && (
-        <div className="ar-modal-backdrop" onClick={close}>
-          <div className="ar-modal" style={{ maxWidth: 680 }} onClick={(e) => e.stopPropagation()}>
+        <div className="ar-modal-backdrop">
+          <div className="ar-modal" style={{ maxWidth: 680 }}>
             <div className="ar-modal-header">
               <span className="ar-modal-title">{editId ? "Edit Post" : "New Blog Post"}</span>
               <button className="ar-modal-close" onClick={close}>×</button>
@@ -1198,7 +1279,9 @@ export default function AdminApp() {
   return (
     <AuthProvider>
       <style>{ADMIN_CSS}</style>
-      <Outlet />
+      <DialogProvider>
+        <Outlet />
+      </DialogProvider>
     </AuthProvider>
   );
 }
