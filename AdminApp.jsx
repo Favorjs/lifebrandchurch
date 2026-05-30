@@ -171,9 +171,25 @@ const ADMIN_CSS = `
     .ar-form-row { grid-template-columns: 1fr; }
     .ar-content { padding: 16px; }
     .ar-topbar { padding: 0 16px; gap: 10px; }
-    .ar-stats { grid-template-columns: repeat(2, 1fr); }
+    .ar-topbar-meta { display: none; }
+    .ar-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .ar-card-header { flex-wrap: wrap; gap: 8px; }
     .ar-card-body { padding: 14px; }
-    .ar-table th, .ar-table td { padding: 10px 10px; }
+    .ar-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .ar-table { min-width: 540px; font-size: 0.82rem; }
+    .ar-table th, .ar-table td { padding: 10px 10px; white-space: nowrap; }
+    .ar-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+    .ar-modal-body { padding: 16px; }
+    .ar-modal-footer { padding: 12px 16px; }
+  }
+
+  @media (max-width: 480px) {
+    .ar-content { padding: 12px; }
+    .ar-topbar { height: 52px; }
+    .ar-stat-value { font-size: 1.4rem; }
+    .ar-modal-backdrop { padding: 0; align-items: flex-end; }
+    .ar-modal { border-radius: 12px 12px 0 0; max-width: 100%; max-height: 92vh; }
+    .ar-upload-zone { padding: 20px; }
   }
 `;
 
@@ -307,7 +323,7 @@ function AdminLayout({ children, title }) {
             <span /><span /><span />
           </button>
           <span className="ar-page-title">{title}</span>
-          <span style={{ fontSize: "0.78rem", color: "#94a3b8" }}>Life Brand Church Admin</span>
+          <span className="ar-topbar-meta" style={{ fontSize: "0.78rem", color: "#94a3b8" }}>Life Brand Church Admin</span>
         </header>
         <div className="ar-content">{children}</div>
       </main>
@@ -532,7 +548,7 @@ export function AdminEvents() {
           <span className="ar-card-title">Events ({items.length})</span>
           <button className="ar-btn ar-btn-primary" onClick={openAdd}>{Icons.plus} Add Event</button>
         </div>
-        <div style={{ overflowX: "auto" }}>
+        <div className="ar-table-wrap" style={{ overflowX: "auto" }}>
           <table className="ar-table">
             <thead><tr><th>Image</th><th>Date</th><th>Title</th><th>Category</th><th>Featured</th><th>Actions</th></tr></thead>
             <tbody>
@@ -655,7 +671,7 @@ export function AdminSermons() {
           <span className="ar-card-title">Sermons ({items.length})</span>
           <button className="ar-btn ar-btn-primary" onClick={openAdd}>{Icons.plus} Add Sermon</button>
         </div>
-        <div style={{ overflowX: "auto" }}>
+        <div className="ar-table-wrap" style={{ overflowX: "auto" }}>
           <table className="ar-table">
             <thead><tr><th>Thumbnail</th><th>Title</th><th>Pastor</th><th>Date</th><th>Category</th><th>Actions</th></tr></thead>
             <tbody>
@@ -771,7 +787,7 @@ export function AdminBlog() {
           <span className="ar-card-title">Blog Posts ({items.length})</span>
           <button className="ar-btn ar-btn-primary" onClick={openAdd}>{Icons.plus} New Post</button>
         </div>
-        <div style={{ overflowX: "auto" }}>
+        <div className="ar-table-wrap" style={{ overflowX: "auto" }}>
           <table className="ar-table">
             <thead><tr><th>Image</th><th>Title</th><th>Author</th><th>Date</th><th>Actions</th></tr></thead>
             <tbody>
