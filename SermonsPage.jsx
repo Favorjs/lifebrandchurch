@@ -68,12 +68,31 @@ export default function SermonsPage() {
     <div>
       <style>{`
         @media (max-width: 820px) {
-          .sm-video-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .sm-video-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
         }
+
+        /* Compact sermon sidebar into a horizontal scroll strip on phones */
         @media (max-width: 640px) {
           .sm-sermon-sidebar-label { display: none; }
-          .sm-sermon-list > div { padding: 12px !important; }
-          .sm-sermon-list img { width: 56px !important; height: 38px !important; }
+          .sm-sermon-list {
+            flex-direction: row !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            gap: 10px !important;
+            padding-bottom: 8px;
+          }
+          .sm-sermon-list::-webkit-scrollbar { height: 3px; }
+          .sm-sermon-list::-webkit-scrollbar-thumb { background: rgba(229,69,43,0.45); border-radius: 2px; }
+          .sm-sermon-list > div {
+            flex: 0 0 200px !important;
+            align-items: flex-start !important;
+            padding: 10px 12px !important;
+          }
+          .sm-sermon-list > div img { width: 54px !important; height: 36px !important; }
+          .sm-sermon-thumb { width: 54px !important; height: 36px !important; }
+
+          /* Tighten the "now playing" meta row */
+          .sm-video-meta { flex-direction: column !important; gap: 6px !important; }
         }
       `}</style>
       <PageHero
@@ -84,11 +103,11 @@ export default function SermonsPage() {
       />
 
       {/* ── FEATURED VIDEO PLAYER ── */}
-      {activeVideo && <DarkSection style={{ padding: "80px 24px", background: "var(--charcoal)" }}>
+      {activeVideo && <DarkSection style={{ padding: "clamp(36px, 7vw, 80px) clamp(16px, 4vw, 24px)", background: "var(--charcoal)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto" }}>
           <FadeIn>
             <div className="label-blue">Now Playing</div>
-            <h2 className="section-title-light" style={{ marginBottom: 40 }}>Latest Sermon</h2>
+            <h2 className="section-title-light" style={{ marginBottom: "clamp(18px, 4vw, 40px)" }}>Latest Sermon</h2>
           </FadeIn>
           <div className="about-grid sm-video-grid" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 40, alignItems: "start" }}>
             <FadeIn>
@@ -105,7 +124,7 @@ export default function SermonsPage() {
                 <div style={{ marginTop: 24 }}>
                   <span className="tag tag-red" style={{ marginBottom: 12, display: "inline-block" }}>{activeVideo.category}</span>
                   <h3 style={{ fontFamily: "'Source Serif 4', serif", fontSize: "clamp(1.2rem, 2.5vw, 1.7rem)", fontWeight: 400, color: "var(--white)", marginBottom: 10, lineHeight: 1.4 }}>{activeVideo.title}</h3>
-                  <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+                  <div className="sm-video-meta" style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
                     <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)" }}>
                       <span style={{ color: "var(--red-light)" }}>— </span>{activeVideo.pastor}
                     </span>
