@@ -433,6 +433,7 @@ export function AdminGallery() {
   const [uploading,setUploading]= useState(false);
   const [msg,      setMsg]      = useState("");
   const [drag,     setDrag]     = useState(false);
+  const [catError, setCatError] = useState("");
   const inputRef = useRef();
 
   useEffect(() => subscribe(COLS.gallery, setItems), []);
@@ -443,10 +444,11 @@ export function AdminGallery() {
   const addCat = async () => {
     const t = newCat.trim();
     if (!t || cats.includes(t)) return;
+    const prev = cats;
     const next = [...cats, t];
-    setCats(next);
-    setNewCat("");
-    await setSetting("gallery_cats", { cats: next }).catch(() => setCats(cats));
+    setCats(next); setNewCat(""); setCatError("");
+    try { await setSetting("gallery_cats", { cats: next }); }
+    catch { setCats(prev); setNewCat(t); setCatError('Save failed — add the "settings" collection to your Firestore security rules.'); }
   };
 
   const removeCat = async (cat) => {
@@ -456,10 +458,12 @@ export function AdminGallery() {
       return;
     }
     if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
+    const prev = cats;
     const next = cats.filter((c) => c !== cat);
     const saved = next.length ? next : DEFAULT_GALLERY_CATS;
-    setCats(saved);
-    await setSetting("gallery_cats", { cats: saved }).catch(() => setCats(cats));
+    setCats(saved); setCatError("");
+    try { await setSetting("gallery_cats", { cats: saved }); }
+    catch { setCats(prev); setCatError('Save failed — add the "settings" collection to your Firestore security rules.'); }
   };
 
   const addFiles = (files) => {
@@ -532,6 +536,7 @@ export function AdminGallery() {
           <span style={{ fontSize: "0.74rem", color: "#64748b" }}>These appear as tabs on the public Gallery page</span>
         </div>
         <div className="ar-card-body">
+          {catError && <div className="ar-alert ar-alert-error" style={{ marginBottom: 14 }}>{catError}</div>}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
             {cats.map((cat) => (
               <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, fontSize: "0.82rem", color: "#334155", fontWeight: 500 }}>
@@ -541,13 +546,7 @@ export function AdminGallery() {
             ))}
           </div>
           <div style={{ display: "flex", gap: 8, maxWidth: 360 }}>
-            <input
-              className="ar-input"
-              value={newCat}
-              onChange={(e) => setNewCat(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addCat()}
-              placeholder="New tab name…"
-            />
+            <input className="ar-input" value={newCat} onChange={(e) => setNewCat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCat()} placeholder="New tab name…" />
             <button className="ar-btn ar-btn-primary" onClick={addCat} disabled={!newCat.trim()}>+ Add</button>
           </div>
         </div>
@@ -721,6 +720,8 @@ export function AdminEvents() {
   const [editId, setEditId] = useState(null);
   const [saving, setSaving] = useState(false);
 
+  const [catError, setCatError] = useState("");
+
   useEffect(() => subscribe(COLS.events, setItems), []);
   useEffect(() => subscribeSetting("event_cats", (d) => {
     if (d?.cats?.length) setCats(d.cats);
@@ -729,10 +730,11 @@ export function AdminEvents() {
   const addCat = async () => {
     const t = newCat.trim();
     if (!t || cats.includes(t)) return;
+    const prev = cats;
     const next = [...cats, t];
-    setCats(next);
-    setNewCat("");
-    await setSetting("event_cats", { cats: next }).catch(() => setCats(cats));
+    setCats(next); setNewCat(""); setCatError("");
+    try { await setSetting("event_cats", { cats: next }); }
+    catch { setCats(prev); setNewCat(t); setCatError('Save failed — add the "settings" collection to your Firestore security rules.'); }
   };
 
   const removeCat = async (cat) => {
@@ -742,10 +744,12 @@ export function AdminEvents() {
       return;
     }
     if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
+    const prev = cats;
     const next = cats.filter((c) => c !== cat);
     const saved = next.length ? next : DEFAULT_EVENT_CATS;
-    setCats(saved);
-    await setSetting("event_cats", { cats: saved }).catch(() => setCats(cats));
+    setCats(saved); setCatError("");
+    try { await setSetting("event_cats", { cats: saved }); }
+    catch { setCats(prev); setCatError('Save failed — add the "settings" collection to your Firestore security rules.'); }
   };
 
   const [activeFilter, setActiveFilter] = useState("All");
@@ -772,6 +776,7 @@ export function AdminEvents() {
           <span style={{ fontSize: "0.74rem", color: "#64748b" }}>These appear as tabs on the public Events page</span>
         </div>
         <div className="ar-card-body">
+          {catError && <div className="ar-alert ar-alert-error" style={{ marginBottom: 14 }}>{catError}</div>}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
             {cats.map((cat) => (
               <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, fontSize: "0.82rem", color: "#334155", fontWeight: 500 }}>
@@ -781,13 +786,7 @@ export function AdminEvents() {
             ))}
           </div>
           <div style={{ display: "flex", gap: 8, maxWidth: 360 }}>
-            <input
-              className="ar-input"
-              value={newCat}
-              onChange={(e) => setNewCat(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addCat()}
-              placeholder="New tab name…"
-            />
+            <input className="ar-input" value={newCat} onChange={(e) => setNewCat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCat()} placeholder="New tab name…" />
             <button className="ar-btn ar-btn-primary" onClick={addCat} disabled={!newCat.trim()}>+ Add</button>
           </div>
         </div>
@@ -916,6 +915,8 @@ export function AdminSermons() {
   const [editId,       setEditId]       = useState(null);
   const [saving,       setSaving]       = useState(false);
 
+  const [catError, setCatError] = useState("");
+
   useEffect(() => subscribe(COLS.sermons, setItems), []);
   useEffect(() => subscribeSetting("sermon_cats", (d) => {
     if (d?.cats?.length) setCats(d.cats);
@@ -924,10 +925,11 @@ export function AdminSermons() {
   const addCat = async () => {
     const t = newCat.trim();
     if (!t || cats.includes(t)) return;
+    const prev = cats;
     const next = [...cats, t];
-    setCats(next);
-    setNewCat("");
-    await setSetting("sermon_cats", { cats: next }).catch(() => setCats(cats));
+    setCats(next); setNewCat(""); setCatError("");
+    try { await setSetting("sermon_cats", { cats: next }); }
+    catch { setCats(prev); setNewCat(t); setCatError('Save failed — add the "settings" collection to your Firestore security rules.'); }
   };
 
   const removeCat = async (cat) => {
@@ -937,10 +939,12 @@ export function AdminSermons() {
       return;
     }
     if (!confirm(`Remove the "${cat}" tab? This cannot be undone.`)) return;
+    const prev = cats;
     const next = cats.filter((c) => c !== cat);
     const saved = next.length ? next : DEFAULT_SERMON_CATS;
-    setCats(saved);
-    await setSetting("sermon_cats", { cats: saved }).catch(() => setCats(cats));
+    setCats(saved); setCatError("");
+    try { await setSetting("sermon_cats", { cats: saved }); }
+    catch { setCats(prev); setCatError('Save failed — add the "settings" collection to your Firestore security rules.'); }
   };
 
   const openAdd  = ()     => { setForm({ title: "", pastor: "Apostle Olusayo Oyebola Ajao", date: "", duration: "", category: cats[0] || "Grace", youtubeId: "", thumbnail: "" }); setEditId(null); setModal(true); };
@@ -967,6 +971,7 @@ export function AdminSermons() {
           <span style={{ fontSize: "0.74rem", color: "#64748b" }}>These appear as filter tabs on the public Sermons page</span>
         </div>
         <div className="ar-card-body">
+          {catError && <div className="ar-alert ar-alert-error" style={{ marginBottom: 14 }}>{catError}</div>}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
             {cats.map((cat) => (
               <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 20, fontSize: "0.82rem", color: "#334155", fontWeight: 500 }}>
