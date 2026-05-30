@@ -49,6 +49,7 @@ export default function BlogPage() {
         .blog-content u  { text-decoration: underline; }
         .blog-content s  { text-decoration: line-through; }
         .blog-content hr { border: none; border-top: 2px solid var(--stone); margin: 32px 0; }
+        .blog-content [style*="text-align: justify"] { text-align: justify; }
       `}</style>
 
       <PageHero
