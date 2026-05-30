@@ -162,12 +162,13 @@ const ADMIN_CSS = `
 
   /* Responsive */
   @media (max-width: 768px) {
+    .ar { overflow-x: hidden; }
     .ar-hamburger { display: flex; }
     .ar-overlay { display: block; position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 48; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
     .ar-overlay.show { opacity: 1; visibility: visible; }
     .ar-side { transform: translateX(-100%); transition: transform 0.3s; }
     .ar-side.open { transform: translateX(0); }
-    .ar-main { margin-left: 0; }
+    .ar-main { margin-left: 0 !important; min-width: 0; width: 100%; max-width: 100vw; }
     .ar-form-row { grid-template-columns: 1fr; }
     .ar-content { padding: 16px; }
     .ar-topbar { padding: 0 16px; gap: 10px; }
@@ -175,8 +176,8 @@ const ADMIN_CSS = `
     .ar-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .ar-card-header { flex-wrap: wrap; gap: 8px; }
     .ar-card-body { padding: 14px; }
-    .ar-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .ar-table { min-width: 540px; font-size: 0.82rem; }
+    .ar-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+    .ar-table { min-width: 500px; font-size: 0.82rem; }
     .ar-table th, .ar-table td { padding: 10px 10px; white-space: nowrap; }
     .ar-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
     .ar-modal-body { padding: 16px; }
