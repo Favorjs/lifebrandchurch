@@ -149,12 +149,31 @@ const ADMIN_CSS = `
   .ar-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; display: block; }
   .ar-thumb-placeholder { width: 80px; height: 60px; background: #f1f5f9; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
 
+  /* Hamburger button */
+  .ar-hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; cursor: pointer; padding: 6px 8px; background: none; border: none; border-radius: 6px; flex-shrink: 0; }
+  .ar-hamburger:hover { background: #f1f5f9; }
+  .ar-hamburger span { display: block; width: 20px; height: 2px; background: #334155; border-radius: 2px; transition: transform 0.25s, opacity 0.2s; }
+  .ar-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .ar-hamburger.open span:nth-child(2) { opacity: 0; }
+  .ar-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Sidebar overlay (mobile only) */
+  .ar-overlay { display: none; }
+
   /* Responsive */
   @media (max-width: 768px) {
+    .ar-hamburger { display: flex; }
+    .ar-overlay { display: block; position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 48; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .ar-overlay.show { opacity: 1; visibility: visible; }
     .ar-side { transform: translateX(-100%); transition: transform 0.3s; }
     .ar-side.open { transform: translateX(0); }
     .ar-main { margin-left: 0; }
     .ar-form-row { grid-template-columns: 1fr; }
+    .ar-content { padding: 16px; }
+    .ar-topbar { padding: 0 16px; gap: 10px; }
+    .ar-stats { grid-template-columns: repeat(2, 1fr); }
+    .ar-card-body { padding: 14px; }
+    .ar-table th, .ar-table td { padding: 10px 10px; }
   }
 `;
 
@@ -234,6 +253,8 @@ export function AdminLogin() {
 function AdminLayout({ children, title }) {
   const user     = useAdmin();
   const navigate = useNavigate();
+  const [sideOpen, setSideOpen] = useState(false);
+  const closeSide = () => setSideOpen(false);
 
   const NAV = [
     { to: "/admin/dashboard", icon: Icons.dashboard, label: "Dashboard" },
@@ -245,8 +266,11 @@ function AdminLayout({ children, title }) {
 
   return (
     <div className="ar">
+      {/* Mobile overlay — tap outside to close */}
+      <div className={`ar-overlay${sideOpen ? " show" : ""}`} onClick={closeSide} />
+
       {/* Sidebar */}
-      <aside className="ar-side">
+      <aside className={`ar-side${sideOpen ? " open" : ""}`}>
         <div className="ar-logo">
           <img src="/images/header/logo.png" alt="Life Brand Church" />
           <div className="ar-logo-name">Admin Dashboard</div>
@@ -254,12 +278,12 @@ function AdminLayout({ children, title }) {
         <nav className="ar-nav">
           <div className="ar-section-label">Content</div>
           {NAV.map(({ to, icon, label }) => (
-            <NavLink key={to} to={to} className={({ isActive }) => `ar-link${isActive ? " active" : ""}`}>
+            <NavLink key={to} to={to} onClick={closeSide} className={({ isActive }) => `ar-link${isActive ? " active" : ""}`}>
               {icon} {label}
             </NavLink>
           ))}
           <div className="ar-section-label">Site</div>
-          <button className="ar-link" onClick={() => { window.open("/", "_blank"); }}>
+          <button className="ar-link" onClick={() => { window.open("/", "_blank"); closeSide(); }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             View Website
           </button>
@@ -275,6 +299,13 @@ function AdminLayout({ children, title }) {
       {/* Main */}
       <main className="ar-main">
         <header className="ar-topbar">
+          <button
+            className={`ar-hamburger${sideOpen ? " open" : ""}`}
+            onClick={() => setSideOpen(o => !o)}
+            aria-label="Toggle menu"
+          >
+            <span /><span /><span />
+          </button>
           <span className="ar-page-title">{title}</span>
           <span style={{ fontSize: "0.78rem", color: "#94a3b8" }}>Life Brand Church Admin</span>
         </header>
