@@ -444,13 +444,16 @@ export function AdminGallery() {
     const t = newCat.trim();
     if (!t || cats.includes(t)) return;
     const next = [...cats, t];
-    await setSetting("gallery_cats", { cats: next });
+    setCats(next);
     setNewCat("");
+    await setSetting("gallery_cats", { cats: next }).catch(() => setCats(cats));
   };
 
   const removeCat = async (cat) => {
     const next = cats.filter((c) => c !== cat);
-    await setSetting("gallery_cats", { cats: next.length ? next : DEFAULT_GALLERY_CATS });
+    const saved = next.length ? next : DEFAULT_GALLERY_CATS;
+    setCats(saved);
+    await setSetting("gallery_cats", { cats: saved }).catch(() => setCats(cats));
   };
 
   const addFiles = (files) => {
@@ -687,13 +690,16 @@ export function AdminEvents() {
     const t = newCat.trim();
     if (!t || cats.includes(t)) return;
     const next = [...cats, t];
-    await setSetting("event_cats", { cats: next });
+    setCats(next);
     setNewCat("");
+    await setSetting("event_cats", { cats: next }).catch(() => setCats(cats));
   };
 
   const removeCat = async (cat) => {
     const next = cats.filter((c) => c !== cat);
-    await setSetting("event_cats", { cats: next.length ? next : DEFAULT_EVENT_CATS });
+    const saved = next.length ? next : DEFAULT_EVENT_CATS;
+    setCats(saved);
+    await setSetting("event_cats", { cats: saved }).catch(() => setCats(cats));
   };
 
   const openAdd  = ()      => { setForm({ title: "", month: "JUN", day: "01", time: "", location: "", desc: "", category: cats[0] || "Worship", featured: false, image: "" }); setEditId(null); setModal(true); };
